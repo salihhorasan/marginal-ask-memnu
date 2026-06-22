@@ -73,8 +73,12 @@ export async function registerUser(email, password, username) {
       });
     });
   } catch (err) {
-    // Firestore yazımı başarısız oldu - yarım hesap kalmasın diye Auth hesabını geri al
-    await deleteUser(credential.user);
+    try {
+      await deleteUser(credential.user);
+    } catch (_deleteErr) {
+      // Temizlik başarısız olursa bile orijinal hatayı iletmeye devam et.
+      // Auth'ta sahipsiz hesap kalabilir - admin SDK ile temizlenmeli.
+    }
     if (err.message === "USERNAME_TAKEN") {
       throw new Error("Bu kullanıcı adı zaten alınmış. Başka bir ad dene.");
     }

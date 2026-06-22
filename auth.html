@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Giriş / Kayıt</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23111'/%3E%3Ctext x='16' y='22' font-size='16' font-family='sans-serif' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="css/auth.css">
 </head>
 <body>
@@ -15,22 +16,22 @@
     </div>
 
     <form id="login-form" class="tab-panel active">
-      <input type="email" id="login-email" placeholder="E-posta" required>
-      <input type="password" id="login-password" placeholder="Şifre" required>
+      <input type="email" id="login-email" placeholder="E-posta" autocomplete="email" required>
+      <input type="password" id="login-password" placeholder="Şifre" autocomplete="current-password" required>
       <button type="submit">Giriş Yap</button>
       <p class="message" id="login-message"></p>
     </form>
 
     <form id="register-form" class="tab-panel">
-      <input type="text" id="register-username" placeholder="Kullanıcı adı" required>
-      <input type="email" id="register-email" placeholder="E-posta" required>
-      <input type="password" id="register-password" placeholder="Şifre (en az 6 karakter)" required minlength="6">
+      <input type="text" id="register-username" placeholder="Kullanıcı adı" autocomplete="username" required>
+      <input type="email" id="register-email" placeholder="E-posta" autocomplete="email" required>
+      <input type="password" id="register-password" placeholder="Şifre (en az 6 karakter)" autocomplete="new-password" required minlength="6">
       <button type="submit">Kayıt Ol</button>
       <p class="message" id="register-message"></p>
     </form>
 
     <form id="reset-form" class="tab-panel">
-      <input type="email" id="reset-email" placeholder="E-posta" required>
+      <input type="email" id="reset-email" placeholder="E-posta" autocomplete="email" required>
       <button type="submit">Sıfırlama Linki Gönder</button>
       <p class="message" id="reset-message"></p>
     </form>
