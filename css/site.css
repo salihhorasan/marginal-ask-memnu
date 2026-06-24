@@ -1,87 +1,232 @@
-* {
-  box-sizing: border-box;
+/* ════════════════════════════════════════════
+   Marginal Archive — site.css
+   Tüm sayfalarda paylaşılan temel stiller.
+   ════════════════════════════════════════════ */
+
+:root {
+  --page:       #050806;
+  --surface:    #070b09;
+  --surface-2:  #101914;
+  --surface-3:  #142018;
+  --surface-c:  #1d211e;
+  --surface-ch: #272b28;
+  --surface-clo:#191c1a;
+  --border:     #203126;
+  --border-s:   #2c4636;
+  --text-p:     #f2fff8;
+  --text-m:     #94aa9d;
+  --primary-c:  #00b87a;
+  --secondary:  #13d694;
+  --outline-v:  #3c4a41;
+  --danger:     #e74c3c;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  overflow-x: hidden;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 0; height: 0; display: none;
 }
 
 body {
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  margin: 0;
-  background: #f5f5f5;
-  color: #111;
+  background-color: var(--page);
+  color: var(--text-p);
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  padding-top: 49px;
 }
 
-.site-header {
+/* ── Scrollbar gizle ── */
+.hide-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scroll::-webkit-scrollbar {
+  width: 0; height: 0; display: none;
+}
+
+/* ── Tipografi ── */
+.f-mono  { font-family: 'JetBrains Mono', monospace; }
+.f-sans  { font-family: 'Hanken Grotesk', sans-serif; }
+
+.t-overline {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.t-metadata {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.t-section-heading {
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  line-height: 1.2;
+}
+
+.empty-state {
+  color: var(--text-m);
+  font-size: 14px;
+  padding: 8px 0;
+}
+
+.material-symbols-outlined {
+  font-size: 22px;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* ══════════════════
+    TOP NAV
+    ══════════════════ */
+nav.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1.5rem;
-  background: #fff;
-  border-bottom: 1px solid #ddd;
+  padding: 12px 24px;
+  background: var(--page);
+  border-bottom: 1px solid var(--border);
 }
 
-.site-header .logo {
-  font-weight: 700;
+.logo {
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  color: var(--primary-c);
+  line-height: 1;
   text-decoration: none;
-  color: #111;
-  font-size: 1.1rem;
 }
 
-#auth-status {
+.nav-icons {
   display: flex;
+  gap: 16px;
   align-items: center;
-  gap: 0.75rem;
   font-size: 0.9rem;
 }
-
-#auth-status a {
-  color: #111;
+.nav-icons a {
+  color: var(--text-m);
   text-decoration: none;
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  transition: color 0.2s;
 }
+.nav-icons a:hover { color: var(--text-p); }
 
-#auth-status button {
-  padding: 0.4rem 0.8rem;
-  border: 1px solid #ccc;
-  background: #fff;
-  border-radius: 4px;
+.nav-icons button,
+.nav-icons .nav-btn {
+  background: none;
+  border: 1px solid var(--border-s);
+  color: var(--text-m);
   cursor: pointer;
-  font-size: 0.85rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+.nav-icons button:hover,
+.nav-icons .nav-btn:hover {
+  color: var(--text-p);
+  border-color: var(--primary-c);
 }
 
-main {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 1.5rem;
+.nav-username {
+  color: var(--primary-c);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
 }
 
-.video-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.25rem;
+/* ══════════════════
+    FOOTER
+    ══════════════════ */
+footer {
+  background: var(--page);
+  border-top: 1px solid var(--border-s);
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+.footer-copy {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text-m);
+}
+.footer-links { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+.footer-links a {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text-m);
+  text-decoration: underline;
+  transition: color 0.2s;
+  opacity: 0.9;
+}
+.footer-links a:hover { color: var(--secondary); opacity: 1; }
+
+@media (min-width: 1024px) {
+  footer {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+  }
 }
 
-.video-card {
-  display: block;
-  text-decoration: none;
-  color: #111;
-  background: #fff;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+/* ══════════════════
+    TOAST
+    ══════════════════ */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface-ch);
+  color: var(--text-p);
+  padding: 10px 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid var(--border-s);
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
 }
-
-.video-card img {
-  width: 100%;
-  display: block;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-  background: #ddd;
-}
-
-.video-card h3 {
-  margin: 0;
-  padding: 0.75rem;
-  font-size: 0.95rem;
-}
-
-#video-detail iframe {
-  max-width: 100%;
-}
+.toast.show { opacity: 1; }

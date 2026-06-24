@@ -7,6 +7,7 @@ const authStatus = document.getElementById("auth-status");
 
 function renderLoggedOut() {
   authStatus.innerHTML = "";
+
   const link = document.createElement("a");
   link.href = "auth.html";
   link.textContent = "Giriş Yap";
@@ -14,25 +15,25 @@ function renderLoggedOut() {
 }
 
 function renderLoggedIn(displayName) {
-  // ÖNEMLİ: username "esnek" formatta olduğu için (özel karakter içerebilir),
-  // burada innerHTML değil textContent kullanıyoruz - XSS riski olmasın diye.
   authStatus.innerHTML = "";
 
-  const greeting = document.createElement("span");
-  greeting.textContent = `Merhaba, ${displayName}`;
+  const username = document.createElement("span");
+  username.className = "nav-username";
+  username.textContent = displayName;
 
   const logoutBtn = document.createElement("button");
-  logoutBtn.textContent = "Çıkış Yap";
+  logoutBtn.innerHTML =
+    '<span class="material-symbols-outlined" style="font-size:18px">logout</span> Çıkış';
   logoutBtn.addEventListener("click", async () => {
     try {
       await logoutUser();
     } catch (_) {
-      // Çıkış başarısız olsa bile ana sayfaya yönlendir
+      // Çıkış başarısız olsa bile devam et
     }
     window.location.href = "index.html";
   });
 
-  authStatus.append(greeting, logoutBtn);
+  authStatus.append(username, logoutBtn);
 }
 
 onAuthStateChanged(auth, async (user) => {
@@ -47,8 +48,8 @@ onAuthStateChanged(auth, async (user) => {
     if (snap.exists()) {
       displayName = snap.data().username;
     }
-  } catch (err) {
-    // Profil okunamazsa sessizce email göster, sayfayı bozma
+  } catch (_) {
+    // Profil okunamazsa email göster
   }
 
   renderLoggedIn(displayName);

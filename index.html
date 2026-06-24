@@ -1,26 +1,38 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Arşiv</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23111'/%3E%3Ctext x='16' y='22' font-size='16' font-family='sans-serif' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="css/site.css">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Marginal Archive</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23050806'/%3E%3Ctext x='16' y='22' font-size='16' font-family='sans-serif' fill='%2300b87a' text-anchor='middle'%3EM%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;700;850;900&family=JetBrains+Mono:wght@400;700;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/site.css"/>
+<link rel="stylesheet" href="css/index.css"/>
+</style>
 </head>
 <body>
-  <header class="site-header">
-    <a href="index.html" class="logo">Arşiv</a>
-    <nav id="auth-status"></nav>
-  </header>
 
-  <main>
-    <h1>Videolar</h1>
-    <div id="video-list" class="video-grid">
-      <p>Yükleniyor...</p>
-    </div>
-  </main>
+<nav class="topbar">
+  <a href="index.html" class="logo">MARGINAL ARCHIVE</a>
+  <div class="nav-icons" id="auth-status"></div>
+</nav>
 
-  <script type="module" src="js/header.js"></script>
-  <script type="module" src="js/video-list.js"></script>
+<div class="container">
+  <h1 class="section-heading">Arşiv</h1>
+  <div class="series-grid" id="series-grid">
+    <p class="loading-state">Yükleniyor…</p>
+  </div>
+</div>
+
+<footer>
+  <span class="footer-copy">© 2026 MARGINAL ARCHIVE</span>
+  <div class="footer-links">
+    <a href="index.html">Ana Sayfa</a>
+  </div>
+</footer>
+
+<script type="module" src="js/header.js"></script>
+<script type="module" src="js/series-list.js"></script>
 </body>
 </html>
