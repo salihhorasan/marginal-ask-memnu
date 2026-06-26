@@ -3,7 +3,7 @@
   Tüm sayfalarda paylaşılan temel stiller.
   ════════════════════════════════════════════ */
 
-  :root {
+:root {
   --page:       #050806;
   --surface:    #070b09;
   --surface-2:  #101914;
@@ -230,6 +230,172 @@ footer {
 }
 
 /* ══════════════════
+    PROFILE PANEL
+    ══════════════════ */
+.nav-username-btn {
+  background: none !important;
+  border: 1px solid var(--border-s) !important;
+  color: var(--primary-c) !important;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  padding: 6px 12px !important;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-transform: uppercase !important;
+  letter-spacing: 0.6px !important;
+  display: flex !important;
+  align-items: center !important;
+  line-height: 1 !important;
+  height: auto !important;
+  transition: border-color 0.2s !important;
+}
+.nav-username-btn:hover {
+  border-color: var(--primary-c) !important;
+}
+
+.profile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 8, 6, 0);
+  z-index: 60;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  transition: background 0.3s;
+}
+.profile-overlay.open {
+  background: rgba(5, 8, 6, 0.85);
+  pointer-events: auto;
+}
+
+.profile-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  width: 90%;
+  max-width: 400px;
+  padding: 0;
+  transform: scale(0.95);
+  opacity: 0;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+.profile-overlay.open .profile-panel {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.profile-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.profile-panel-title {
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 18px;
+  font-weight: 850;
+  color: var(--text-p);
+}
+.profile-panel-close {
+  background: none;
+  border: none;
+  color: var(--text-m);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  transition: color 0.2s;
+}
+.profile-panel-close:hover { color: var(--text-p); }
+
+.profile-info {
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+}
+.profile-name {
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 20px;
+  font-weight: 850;
+  color: var(--text-p);
+  margin-bottom: 6px;
+}
+.profile-email {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-m);
+}
+
+.profile-delete-btn {
+  width: calc(100% - 48px);
+  margin: 24px;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  transition: all 0.2s;
+}
+.profile-delete-btn:hover {
+  background: var(--danger);
+  color: #fff;
+}
+
+.profile-confirm {
+  padding: 0 24px 24px;
+}
+.profile-confirm-text {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-m);
+  margin-bottom: 16px;
+}
+.profile-confirm-buttons {
+  display: flex;
+  gap: 10px;
+}
+.profile-confirm .confirm-yes {
+  flex: 1;
+  background: var(--danger);
+  color: #fff;
+  border: none;
+  padding: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.profile-confirm .confirm-no {
+  flex: 1;
+  background: var(--surface-2);
+  color: var(--text-p);
+  border: 1px solid var(--border-s);
+  padding: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.profile-message {
+  font-size: 12px;
+  text-align: center;
+  padding: 0 24px 20px;
+  margin: 0;
+  min-height: 1em;
+}
+
+/* ══════════════════
     TOAST
     ══════════════════ */
 .toast {
@@ -248,5 +414,8 @@ footer {
   opacity: 0;
   transition: opacity 0.3s;
   pointer-events: none;
+  white-space: nowrap;
+  max-width: calc(100vw - 32px);
+  text-align: center;
 }
 .toast.show { opacity: 1; }

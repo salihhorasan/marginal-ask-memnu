@@ -85,8 +85,8 @@ async function resolveUsername(uid) {
     console.error("Username çözümlenemedi:", err);
   }
 
-  usernameCache.set(uid, "Anonim");
-  return "Anonim";
+  usernameCache.set(uid, "Silinmiş Kullanıcı");
+  return "Silinmiş Kullanıcı";
 }
 
 /** Toast mesajı göster */

@@ -3,7 +3,10 @@
   auth.html sayfasına özel stiller.
   ════════════════════════════════════════════ */
 
-  body.auth-body {
+/* ══════════════════
+    LAYOUT
+    ══════════════════ */
+body.auth-body {
   justify-content: center;
   align-items: center;
   padding-top: 0;
@@ -36,7 +39,7 @@
   overflow: hidden;
 }
 
-/* ── Tabs ── */
+/* ── Sekmeler ── */
 .tabs {
   display: flex;
   border-bottom: 1px solid var(--border);
@@ -69,7 +72,7 @@
   background: var(--primary-c);
 }
 
-/* ── Slide container ── */
+/* ── Panel Kaydırıcı ── */
 .panels-viewport {
   position: relative;
   height: 340px;
@@ -96,7 +99,7 @@
   padding: 28px 28px 24px;
 }
 
-/* ── Form elemanları ── */
+/* ── Form Elemanları ── */
 .auth-box input {
   width: 100%;
   padding: 12px 14px;
@@ -108,9 +111,7 @@
   transition: border-color 0.2s;
   outline: none;
 }
-.auth-box input:focus {
-  border-color: var(--primary-c);
-}
+.auth-box input:focus { border-color: var(--primary-c); }
 .auth-box input::placeholder {
   color: var(--text-m);
   opacity: 0.6;
@@ -142,7 +143,7 @@
 .message.error { color: var(--danger); }
 .message.success { color: var(--secondary); }
 
-/* ── Hukuki not ── */
+/* ── Hukuki Not ── */
 .legal-notice {
   font-size: 11px;
   color: var(--text-m);
@@ -156,7 +157,7 @@
 }
 .legal-notice a:hover { color: var(--text-p); }
 
-/* ── Footer link ── */
+/* ── Alt Linkler ── */
 .auth-footer {
   display: flex;
   gap: 16px;

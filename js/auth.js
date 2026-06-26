@@ -8,6 +8,8 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 import {
   doc,
+  getDoc,
+  deleteDoc,
   runTransaction,
   serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
@@ -117,5 +119,52 @@ export async function resetPassword(email) {
     await sendPasswordResetEmail(auth, email);
   } catch (err) {
     throw new Error(translateError(err.code));
+  }
+}
+
+// ---------------------------------------------------------------
+// Hesap silme (kullanıcı kendi hesabını siler)
+// ---------------------------------------------------------------
+
+export async function deleteAccount() {
+  const user = auth.currentUser;
+  if (!user) throw new Error("Giriş yapmış bir kullanıcı bulunamadı.");
+
+  const uid = user.uid;
+
+  // 1) Kullanıcının username'ini bul (usernames dokümanını silmek için)
+  try {
+    const userSnap = await getDoc(doc(db, "users", uid));
+    if (userSnap.exists()) {
+      const username = userSnap.data().username;
+      if (username) {
+        const usernameLower = username.toLowerCase();
+        // 2) usernames dokümanını sil
+        try {
+          await deleteDoc(doc(db, "usernames", usernameLower));
+        } catch (_) {
+          // Silinemezse devam et — kritik değil
+        }
+      }
+    }
+  } catch (_) {
+    // users okunamazsa devam et
+  }
+
+  // 3) users dokümanını sil
+  try {
+    await deleteDoc(doc(db, "users", uid));
+  } catch (_) {
+    // Silinemezse devam et
+  }
+
+  // 4) Firebase Auth hesabını sil
+  try {
+    await deleteUser(user);
+  } catch (err) {
+    if (err.code === "auth/requires-recent-login") {
+      throw new Error("Güvenlik nedeniyle hesabınızı silmek için tekrar giriş yapmanız gerekiyor. Çıkış yapıp tekrar giriş yaptıktan sonra deneyin.");
+    }
+    throw new Error("Hesap silinirken bir hata oluştu.");
   }
 }
