@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Hukuki — Marginal Archive</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23050806'/%3E%3Ctext x='16' y='22' font-size='16' font-family='sans-serif' fill='%2300b87a' text-anchor='middle'%3EM%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;700;850;900&family=JetBrains+Mono:wght@400;700;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/site.css"/>
+
+<style>
+  .legal-container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    flex-grow: 1;
+  }
+
+  .legal-nav {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 48px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .legal-nav a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-m);
+    text-decoration: none;
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+  }
+  .legal-nav a:hover {
+    color: var(--text-p);
+    border-color: var(--primary-c);
+  }
+
+  .legal-section {
+    margin-bottom: 80px;
+  }
+
+  .legal-title {
+    font-family: 'Hanken Grotesk', sans-serif;
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    color: var(--text-p);
+    margin-bottom: 8px;
+  }
+
+  .legal-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--text-m);
+    margin-bottom: 32px;
+    display: block;
+  }
+
+  .legal-intro {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text-m);
+    margin-bottom: 32px;
+    max-width: 640px;
+  }
+
+  .legal-heading {
+    font-family: 'Hanken Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 850;
+    color: var(--text-p);
+    margin-top: 40px;
+    margin-bottom: 16px;
+  }
+
+  .legal-subheading {
+    font-family: 'Hanken Grotesk', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-p);
+    margin-top: 20px;
+    margin-bottom: 8px;
+  }
+
+  .legal-text {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text-m);
+    margin-bottom: 12px;
+  }
+
+  .legal-text strong {
+    color: var(--text-p);
+    font-weight: 700;
+  }
+
+  .legal-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 16px 0;
+  }
+  .legal-list li {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text-m);
+    padding-left: 20px;
+    position: relative;
+    margin-bottom: 6px;
+  }
+  .legal-list li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    color: var(--primary-c);
+  }
+
+  .legal-divider {
+    border: none;
+    border-top: 1px dashed var(--border-s);
+    margin: 64px 0;
+  }
+
+  .legal-contact {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px 24px;
+    margin-top: 24px;
+  }
+  .legal-contact a {
+    color: var(--primary-c);
+    text-decoration: none;
+    font-weight: 700;
+  }
+  .legal-contact a:hover {
+    text-decoration: underline;
+  }
+
+  .back-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--text-m);
+    text-decoration: none;
+    margin-bottom: 32px;
+    display: inline-block;
+  }
+  .back-link:hover { color: var(--text-p); }
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="logo">MARGINAL ARCHIVE</a>
+  <div class="nav-icons" id="auth-status"></div>
+</nav>
+
+<div class="legal-container">
+
+  <a href="index.html" class="back-link">&larr; Ana Sayfa</a>
+
+  <nav class="legal-nav">
+    <a href="#gizlilik">Gizlilik Politikası</a>
+    <a href="#kosullar">Kullanım Koşulları</a>
+  </nav>
+
+  <!-- ══════════════════════════════════════════
+       GİZLİLİK POLİTİKASI
+       ══════════════════════════════════════════ -->
+  <section class="legal-section" id="gizlilik">
+    <h1 class="legal-title">Gizlilik Politikası</h1>
+    <span class="legal-date">Son Güncelleme: 24 Haziran 2026</span>
+
+    <p class="legal-intro">
+      Marginal Archive ("Platform"), kullanıcılarının gizliliğine ve kişisel verilerinin korunmasına en yüksek hassasiyeti gösterir. Tamamen "sunucusuz" (serverless) bir mimariyle tasarlanan platformumuzda, yalnızca sistemin temel işlevlerini yerine getirebilmesi için en asgari düzeyde veri toplanmaktadır.
+    </p>
+    <p class="legal-intro">
+      Bu Gizlilik Politikası, 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) ve ilgili mevzuat çerçevesinde hangi verilerinizi neden topladığımızı, nerede sakladığımızı ve haklarınızı açıklamaktadır.
+    </p>
+
+    <h2 class="legal-heading">1. Toplanan Kişisel Veriler</h2>
+    <p class="legal-text">Platforma kayıt olduğunuzda ve platformu kullandığınızda yalnızca aşağıdaki veriler işlenir:</p>
+    <ul class="legal-list">
+      <li><strong>Kimlik Verileri:</strong> Kayıt formunda belirttiğiniz kullanıcı adı.</li>
+      <li><strong>İletişim Verileri:</strong> E-posta adresiniz.</li>
+      <li><strong>Güvenlik Verileri:</strong> Hesabınıza ait şifre (Google Firebase altyapısında hash'lenmiş/şifrelenmiş olarak tutulur; site yöneticisi dahil hiç kimse şifrenizin açık halini göremez).</li>
+      <li><strong>Kullanıcı İçerikleri:</strong> Platformdaki videolara yaptığınız yorumlar.</li>
+    </ul>
+
+    <h2 class="legal-heading">2. Verilerin Kullanım Amacı</h2>
+    <p class="legal-text">Toplanan veriler asla üçüncü şahıslara satılmaz, kiralanmaz veya pazarlama amacıyla paylaşılmaz. Verileriniz yalnızca şu amaçlarla kullanılır:</p>
+    <p class="legal-subheading">2.1. Sistem Yönetimi</p>
+    <p class="legal-text">Hesabınızın oluşturulması, platforma güvenli giriş yapabilmeniz ve gerektiğinde şifre sıfırlama e-postalarının iletilebilmesi.</p>
+    <p class="legal-subheading">2.2. Yorum Denetimi</p>
+    <p class="legal-text">Yazdığınız yorumların kimin tarafından yazıldığının belli olması.</p>
+    <p class="legal-subheading">2.3. Opsiyonel İletişim (Ön Onaylı)</p>
+    <p class="legal-text">Gelecekte devreye alınabilecek bilgilendirme e-postaları, yalnızca profil ayarlarınızdan bu bildirimleri almayı açıkça talep etmeniz (opt-in) durumunda gönderilir. Onay vermeyen kullanıcılara bülten veya duyuru maili atılmaz.</p>
+
+    <h2 class="legal-heading">3. Verilerin Depolanması ve Üçüncü Taraf Servisler</h2>
+    <p class="legal-text">Marginal Archive'in kendisine ait fiziksel bir sunucusu yoktur. Sistem aşağıdaki bulut servis sağlayıcılarının altyapıları üzerinde çalışır:</p>
+    <p class="legal-subheading">3.1. Google Firebase (Veritabanı ve Kimlik Doğrulama)</p>
+    <p class="legal-text">E-posta adresiniz, şifreniz, kullanıcı adınız ve yazdığınız yorumlar Google'ın Cloud Firestore altyapısında saklanır. <strong>Verileriniz Google'ın yurt dışındaki (AB/ABD) sunucularında işlenebilir.</strong> Bu veriler Google'ın küresel veri koruma standartlarına tabidir.</p>
+    <p class="legal-subheading">3.2. Archive.org (Video Akışı)</p>
+    <p class="legal-text">Platformumuzdaki videolar doğrudan Archive.org sunucularından çekilmektedir. Bir videoyu oynattığınız an, cihazınızın IP adresi ve tarayıcı bilgileri (User-Agent) doğrudan Archive.org sunucularına iletilir. Marginal Archive, kullanıcıların IP adreslerini kendi veritabanında kaydetmez ve izlemez.</p>
+
+    <h2 class="legal-heading">4. Çerezler (Cookies) ve Yerel Depolama</h2>
+    <p class="legal-subheading">4.1. Zorunlu Yerel Depolama</p>
+    <p class="legal-text">Sitemiz, oturumunuzun açık kalmasını sağlamak amacıyla tarayıcınızın localStorage ve sessionStorage birimlerini kullanır. Bunun yanı sıra, sayfa performansını iyileştirmek amacıyla video listesi gibi sık erişilen veriler tarayıcınızın yerel hafızasında geçici olarak saklanabilir. Bu veriler kişisel veri içermez ve belirli bir süre sonra otomatik olarak yenilenir.</p>
+    <p class="legal-subheading">4.2. Analitik ve Reklam Çerezleri</p>
+    <p class="legal-text">An itibarıyla platformumuzda Google Analytics, Meta Pixel veya benzeri hiçbir takip, analiz veya reklam çerezi bulunmamaktadır. Gelecekte anonim trafik ölçümü yapmak amacıyla bir analitik aracı entegre edildiği takdirde, bu politika güncellenecek ve kullanıcılara bildirilecektir.</p>
+
+    <h2 class="legal-heading">5. KVKK Kapsamındaki Haklarınız</h2>
+    <p class="legal-text">6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında aşağıdaki haklara sahipsiniz:</p>
+    <ul class="legal-list">
+      <li>Kişisel verilerinizin işlenip işlenmediğini öğrenme</li>
+      <li>Kişisel verileriniz işlenmişse buna ilişkin bilgi talep etme</li>
+      <li>Kişisel verilerinizin işlenme amacını ve bunların amacına uygun kullanılıp kullanılmadığını öğrenme</li>
+      <li>Kişisel verilerinizin eksik veya yanlış işlenmiş olması hâlinde bunların düzeltilmesini isteme</li>
+      <li>Kişisel verilerinizin silinmesini veya yok edilmesini isteme</li>
+      <li>İşlenen verilerin münhasıran otomatik sistemler vasıtasıyla analiz edilmesi suretiyle aleyhinize bir sonucun ortaya çıkmasına itiraz etme</li>
+    </ul>
+
+    <h2 class="legal-heading">6. Verilerin Silinmesi ve Unutulma Hakkı</h2>
+    <p class="legal-subheading">6.1. Kalıcı Silme</p>
+    <p class="legal-text">Platform bünyesinde açtığınız hesabı ve size ait tüm verileri dilediğiniz zaman kalıcı olarak sildirme hakkına sahipsiniz.</p>
+    <p class="legal-subheading">6.2. Başvuru Yöntemi</p>
+    <p class="legal-text">Sitenin arayüzüne otomatik bir "Hesabımı Sil" butonu entegre edilene kadar; veri silme taleplerinizi, sisteme kayıt olduğunuz e-posta adresi üzerinden aşağıdaki adrese iletmeniz gerekmektedir. Talebiniz ulaştıktan sonra veritabanındaki kaydınız kalıcı olarak yok edilir.</p>
+    <p class="legal-subheading">6.3. Yorumların Durumu</p>
+    <p class="legal-text">Hesabınız silindiğinde e-posta kaydınız ve hesap verileriniz tamamen silinir. Veritabanı bütünlüğünün ve sohbet akışının bozulmaması adına, önceden yazdığınız yorumlar metin olarak kalır ancak isim kısmınız "[Silinmiş Kullanıcı]" ibaresine dönüştürülür. Yorum metinlerinizin de tamamen silinmesini istiyorsanız bunu talebinizde özellikle belirtmelisiniz.</p>
+
+    <h2 class="legal-heading">7. İletişim</h2>
+    <p class="legal-text">Bu Gizlilik Politikası veya kişisel verilerinizle ilgili her türlü soru, görüş ve hak talebi için:</p>
+    <div class="legal-contact">
+      <p class="legal-text" style="margin:0"><strong>E-Posta:</strong> <a href="mailto:marginaltr@gmail.com">marginaltr@gmail.com</a></p>
+    </div>
+  </section>
+
+  <hr class="legal-divider"/>
+
+  <!-- ══════════════════════════════════════════
+       KULLANIM KOŞULLARI
+       ══════════════════════════════════════════ -->
+  <section class="legal-section" id="kosullar">
+    <h1 class="legal-title">Kullanım Koşulları</h1>
+    <span class="legal-date">Son Güncelleme: 24 Haziran 2026</span>
+
+    <p class="legal-intro">
+      Lütfen Marginal Archive ("Platform") web sitesini kullanmadan ve hesap oluşturmadan önce bu Kullanım Koşulları'nı dikkatlice okuyunuz. Sitemize kayıt olmanız, bu koşulların tamamını anladığınız ve kabul ettiğiniz anlamına gelir.
+    </p>
+    <p class="legal-intro">
+      Eğer bu koşulların herhangi bir kısmını kabul etmiyorsanız, platformu kullanmamalı ve hesap oluşturmamalısınız.
+    </p>
+
+    <h2 class="legal-heading">1. Platformun Doğası ve Yaş Sınırı</h2>
+    <p class="legal-subheading">1.1. Hobi Projesi Statüsü</p>
+    <p class="legal-text">Marginal Archive, ticari bir kuruluş veya resmi bir yayın şirketi değildir. Bağımsız olarak geliştirilmiş, bir canlı yayın video arşiv projesidir.</p>
+    <p class="legal-subheading">1.2. Yaş Sınırı (+18)</p>
+    <p class="legal-text">Platformda yer alan canlı yayın tekrarları; argo, yetişkinlere yönelik mizah veya 18 yaş altı için uygun olmayabilecek temalar içerebilir. Bu platformda hesap açabilmek için 18 yaşını doldurmuş olmanız şarttır. Kayıt olan her kullanıcı 18 yaşından büyük olduğunu beyan etmiş sayılır. Yanlış beyanlardan doğacak sorumluluk kullanıcının kendisine aittir.</p>
+
+    <h2 class="legal-heading">2. Hesap Güvenliği ve Yönetim Yetkisi</h2>
+    <p class="legal-subheading">2.1. Hesap Sorumluluğu</p>
+    <p class="legal-text">Kayıt olurken kullandığınız e-posta adresinin doğruluğundan ve şifrenizin güvenliğinden tamamen siz sorumlusunuz. Hesabınız üzerinden gerçekleştirilen her türlü eylem sizin tarafınızdan yapılmış kabul edilir.</p>
+    <p class="legal-subheading">2.2. Tek Taraflı Fesih Yetkisi</p>
+    <p class="legal-text">Platform yönetimi, tamamen kendi takdirine bağlı olarak, hiçbir ön bildirimde bulunmaksızın ve hiçbir gerekçe göstermeksizin dilediği kullanıcının hesabını askıya alma, dondurma veya kalıcı olarak silme hakkını saklı tutar. Silinen hesaplara ait yorumlar ve hesap verileri kalıcı olarak yok olur; bu verilerin geri getirilmesi veya yedeklenmesi talep edilemez.</p>
+
+    <h2 class="legal-heading">3. Fikri Mülkiyet ve Telif Hakları</h2>
+    <p class="legal-subheading">3.1. Sadece İzleme Lisansı</p>
+    <p class="legal-text">Platformdaki videolar, yalnızca site üzerinden, ticari olmayan kişisel izleme amacıyla sunulmuştur.</p>
+    <p class="legal-subheading">3.2. Ortak Yayıncılar ve Kesit Paylaşımı</p>
+    <p class="legal-text">Arşivde yer alan videoların birçoğunda farklı konuklar veya ortak yayıncılar yer almaktadır. Bu yayınlardan kesit (klip) alıp üçüncü taraf mecralarda paylaşmak tamamen kullanıcının kendi hukuki riskindedir. Marginal Archive, bu kesitlerin paylaşılmasına kendi adına itiraz etmese dahi; videoda yer alan diğer ortak yayıncıların telif hakkı, kişilik hakkı veya rıza iptali taleplerinden hiçbir şekilde sorumlu tutulamaz. İçeriğin kaldırılmasını talep eden başka bir yayıncının muhatabı, kesiti alıp yayan kişidir.</p>
+    <p class="legal-subheading">3.3. Üçüncü Taraf Telifleri</p>
+    <p class="legal-text">Yayın esnasında arka planda çalmış olabilecek müzikler, ekrana yansımış videolar veya oyunlara ait telif hakları asıl sahiplerine aittir. Bu içeriklerin hak sahipleri tarafından yapılacak başvuru üzerine arşivden kaldırılması durumunda platform sorumluluk kabul etmez.</p>
+
+    <h2 class="legal-heading">4. Altyapı, Kesintiler ve Veri Kaybı</h2>
+    <p class="legal-subheading">4.1. Harici Servis Bağımlılığı</p>
+    <p class="legal-text">Marginal Archive; video barındırma için Archive.org, kimlik doğrulama ve veritabanı için Google Firebase, web yayını için ise GitHub Pages altyapılarını kullanır. Bu harici servislerde yaşanabilecek çökmeler, yavaşlamalar, veri kayıpları veya politik değişiklikler nedeniyle platformun çalışamaz hale gelmesinden Marginal Archive sorumlu tutulamaz.</p>
+    <p class="legal-subheading">4.2. Garanti Reddi</p>
+    <p class="legal-text">Platform "olduğu gibi" sunulur. Kesintisiz çalışma, sıfır hata veya videoların sonsuza dek bu sitede kalacağı garantisi verilmez.</p>
+
+    <h2 class="legal-heading">5. Değişiklikler ve Gelecek Modeller</h2>
+    <p class="legal-text">Platform, bu Kullanım Koşulları'nı dilediği zaman değiştirme hakkına sahiptir. Güncel koşullar sitede yayınlandığı an yürürlüğe girer.</p>
+    <p class="legal-text">An itibarıyla tamamen ücretsiz olan bu servis, gelecekte platformun hayatta kalabilmesi adına bağış/destek sistemlerine veya belirli arşiv içeriklerinin sadece destekçi üyelere açıldığı farklı erişim modellerine evrilebilir. Platform, içeriklerin erişim tipini değiştirme hakkını saklı tutar.</p>
+
+    <h2 class="legal-heading">6. İletişim ve Uyuşmazlık Çözümü</h2>
+    <p class="legal-subheading">6.1. Öncelikli Çözüm Yolu</p>
+    <p class="legal-text">Marginal Archive bir hobi projesi olduğundan, taraflar arasında doğabilecek her türlü sorunda resmi yollara başvurmadan önce karşılıklı iyi niyet çerçevesinde e-posta yoluyla iletişime geçilmesi esastır.</p>
+    <p class="legal-subheading">6.2. Uygulanacak Hukuk</p>
+    <p class="legal-text">İyi niyetli iletişim yoluyla çözülemeyen ve yargıya taşınması zorunlu hale gelen uyuşmazlıklarda Türkiye Cumhuriyeti kanunları uygulanacaktır.</p>
+
+    <div class="legal-contact">
+      <p class="legal-text" style="margin:0"><strong>İletişim:</strong> <a href="mailto:marginaltr@gmail.com">marginaltr@gmail.com</a></p>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <span class="footer-copy">© 2026 MARGINAL ARCHIVE</span>
+  <div class="footer-links">
+    <a href="index.html">Ana Sayfa</a>
+    <a href="#gizlilik">Gizlilik</a>
+    <a href="#kosullar">Koşullar</a>
+  </div>
+</footer>
+
+<script type="module" src="js/header.js"></script>
+</body>
+</html>

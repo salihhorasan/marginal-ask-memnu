@@ -23,7 +23,7 @@ function renderLoggedIn(displayName) {
 
   const logoutBtn = document.createElement("button");
   logoutBtn.innerHTML =
-    '<span class="material-symbols-outlined" style="font-size:18px">logout</span> Çıkış';
+    '<span class="material-symbols-outlined" style="font-size:18px">logout</span><span class="logout-text"> Çıkış</span>';
   logoutBtn.addEventListener("click", async () => {
     try {
       await logoutUser();

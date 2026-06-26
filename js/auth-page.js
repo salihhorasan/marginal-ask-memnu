@@ -1,15 +1,29 @@
 import { registerUser, loginUser, resetPassword } from "./auth.js";
 
-// ---- Sekme geçişi ----
+// ---- Slide tab geçişi ----
 const tabButtons = document.querySelectorAll(".tab-btn");
-const panels = document.querySelectorAll(".tab-panel");
+const panelsTrack = document.querySelector(".panels-track");
 
 tabButtons.forEach((btn) => {
   btn.addEventListener("click", () => {
     tabButtons.forEach((b) => b.classList.remove("active"));
-    panels.forEach((p) => p.classList.remove("active"));
     btn.classList.add("active");
-    document.getElementById(`${btn.dataset.tab}-form`).classList.add("active");
+    panelsTrack.dataset.active = btn.dataset.tab;
+  });
+});
+
+// ---- E-posta senkronizasyonu (tüm sekmelerde aynı) ----
+const emailFields = [
+  document.getElementById("login-email"),
+  document.getElementById("register-email"),
+  document.getElementById("reset-email"),
+];
+
+emailFields.forEach((field) => {
+  field.addEventListener("input", () => {
+    emailFields.forEach((other) => {
+      if (other !== field) other.value = field.value;
+    });
   });
 });
 

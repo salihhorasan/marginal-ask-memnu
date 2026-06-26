@@ -1,9 +1,9 @@
 /* ════════════════════════════════════════════
-   Marginal Archive — site.css
-   Tüm sayfalarda paylaşılan temel stiller.
-   ════════════════════════════════════════════ */
+  Marginal Archive — site.css
+  Tüm sayfalarda paylaşılan temel stiller.
+  ════════════════════════════════════════════ */
 
-:root {
+  :root {
   --page:       #050806;
   --surface:    #070b09;
   --surface-2:  #101914;
@@ -25,6 +25,7 @@
 
 html, body {
   overflow-x: hidden;
+  scroll-behavior: smooth;
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
@@ -164,6 +165,25 @@ nav.topbar {
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
   font-weight: 700;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+  nav.topbar { padding: 10px 16px; }
+
+  .logo { font-size: 20px; }
+
+  .nav-icons { gap: 10px; }
+
+  .nav-icons button,
+  .nav-icons .nav-btn {
+    padding: 6px 8px;
+  }
+
+  .nav-icons .logout-text { display: none; }
 }
 
 /* ══════════════════
