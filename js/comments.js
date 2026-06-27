@@ -3,6 +3,7 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.15.0/f
 import {
   collection,
   query,
+  where,
   orderBy,
   getDocs,
   addDoc,
@@ -66,15 +67,8 @@ async function resolveUsername(uid) {
   // Ancak usernames koleksiyonunda "where uid ==" sorgusu yapılabilir (read: true).
 
   try {
-    const q = query(collection(db, "usernames"));
-    // Tüm usernames'i çekmek ölçeklenebilir değil ama kullanıcı sayısı düşük.
-    // İleride where sorgusu eklenebilir ama şu anki rules sadece read: true diyor.
-    // Aslında read: true olduğu için where sorgusu da çalışır:
-    const { getDocs: gd, where: w } = await import(
-      "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js"
-    );
-    const snap = await gd(
-      query(collection(db, "usernames"), w("uid", "==", uid))
+    const snap = await getDocs(
+      query(collection(db, "usernames"), where("uid", "==", uid))
     );
     if (!snap.empty) {
       const username = snap.docs[0].data().displayUsername;

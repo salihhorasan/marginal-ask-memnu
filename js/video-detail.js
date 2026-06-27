@@ -2,12 +2,8 @@ import { db } from "./firebase-config.js";
 import {
   doc,
   getDoc,
-  collection,
-  query,
-  where,
-  orderBy,
-  getDocs,
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+import { getSeriesVideos } from "./series-cache.js";
 
 // ---------------------------------------------------------------
 // DOM referansları
@@ -51,73 +47,6 @@ function showError(msg) {
   playerShell.style.display = "none";
   navBar.style.display = "none";
   railContainer.style.display = "none";
-}
-
-// ---------------------------------------------------------------
-// localStorage cache (6 saat TTL)
-// ---------------------------------------------------------------
-
-const CACHE_TTL = 6 * 60 * 60 * 1000; // 6 saat (ms)
-
-/** Cache'den seri video listesini oku. Süresi dolmuşsa null döner. */
-function getCachedSeries(seriesId) {
-  try {
-    const raw = localStorage.getItem(`series_${seriesId}`);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (Date.now() - parsed.updatedAt > CACHE_TTL) return null;
-    return parsed.videos;
-  } catch (_) {
-    return null;
-  }
-}
-
-/** Seri video listesini cache'e yaz. */
-function setCachedSeries(seriesId, videos) {
-  try {
-    localStorage.setItem(`series_${seriesId}`, JSON.stringify({
-      updatedAt: Date.now(),
-      videos,
-    }));
-  } catch (_) {
-    // localStorage dolu veya erişilemez — sessizce devam et
-  }
-}
-
-// ---------------------------------------------------------------
-// Seri video listesini getir (cache → Firestore fallback)
-// ---------------------------------------------------------------
-
-async function getSeriesVideos(seriesId) {
-  // 1) Cache'e bak
-  const cached = getCachedSeries(seriesId);
-  if (cached) return cached;
-
-  // 2) Cache yoksa veya süresi dolmuşsa Firestore'dan çek
-  const q = query(
-    collection(db, "videos"),
-    where("isActive", "==", true),
-    where("seriesId", "==", seriesId),
-    orderBy("order", "asc")
-  );
-  const snapshot = await getDocs(q);
-
-  const videos = [];
-  snapshot.forEach((s) => {
-    const d = s.data();
-    videos.push({
-      slug: s.id,
-      title: d.title,
-      order: d.order,
-      archiveId: d.archiveId,
-      description: d.description || "",
-    });
-  });
-
-  // 3) Cache'e yaz
-  setCachedSeries(seriesId, videos);
-
-  return videos;
 }
 
 // ---------------------------------------------------------------
@@ -427,10 +356,6 @@ async function loadVideo() {
 
   // Sticky video
   initStickyVideo();
-}
-
-export function getCurrentSlug() {
-  return getSlugFromUrl();
 }
 
 loadVideo();
