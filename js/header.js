@@ -12,7 +12,7 @@ const authStatus = document.getElementById("auth-status");
 function renderLoggedOut() {
   authStatus.innerHTML = "";
   const link = document.createElement("a");
-  link.href = "auth.html";
+  link.href = "/giris";
   link.textContent = "Giriş Yap";
   authStatus.appendChild(link);
 
@@ -40,7 +40,7 @@ function renderLoggedIn(displayName, email) {
     '<span class="material-symbols-outlined" style="font-size:18px">logout</span><span class="logout-text"> Çıkış</span>';
   logoutBtn.addEventListener("click", async () => {
     try { await logoutUser(); } catch (_) {}
-    window.location.href = "index.html";
+    window.location.href = "/";
   });
 
   authStatus.append(usernameBtn, logoutBtn);
@@ -153,7 +153,7 @@ function showDeleteConfirm(panel, deleteBtn) {
     noBtn.disabled = true;
     try {
       await deleteAccount();
-      window.location.href = "index.html";
+      window.location.href = "/";
     } catch (err) {
       const msg = document.getElementById("profile-message");
       if (msg) {

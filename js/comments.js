@@ -198,7 +198,7 @@ function createCommentCard(comment) {
       const reportBtn = document.createElement("button");
       reportBtn.className = "comment-action-btn report-btn";
       reportBtn.textContent = "Raporla";
-      reportBtn.addEventListener("click", () => reportComment(comment, reportBtn));
+      reportBtn.addEventListener("click", () => showReportConfirm(card, comment));
       actions.appendChild(reportBtn);
     }
 
@@ -259,40 +259,76 @@ function showDeleteConfirm(card, commentId) {
 }
 
 // ---------------------------------------------------------------
-// Raporla
+// Raporlama onay overlay'i
 // ---------------------------------------------------------------
 
-async function reportComment(comment, btn) {
+function showReportConfirm(card, comment) {
+  if (card.querySelector(".confirm-overlay")) return;
   if (!currentUser) return;
 
-  const reportId = `${comment.id}_${currentUser.uid}`;
+  const overlay = document.createElement("div");
+  overlay.className = "confirm-overlay";
 
-  btn.disabled = true;
-  btn.textContent = "Gönderiliyor…";
+  const msg = document.createElement("p");
+  msg.textContent = "Bu yorumu raporlamak istediğine emin misin?";
 
-  try {
-    await setDoc(doc(db, "reports", reportId), {
-      videoSlug: slug,
-      commentId: comment.id,
-      commentTextSnapshot: comment.text,
-      commentAuthorId: comment.userId,
-      reportedBy: currentUser.uid,
-      createdAt: serverTimestamp(),
-    });
-    showToast("Rapor gönderildi.");
-    btn.textContent = "Raporlandı";
-    btn.disabled = true;
-  } catch (err) {
-    if (err.code === "permission-denied" || err.message?.includes("ALREADY_EXISTS")) {
-      showToast("Bu yorumu zaten raporlamıştın.");
-      btn.textContent = "Raporlandı";
-    } else {
-      console.error("Rapor gönderilemedi:", err);
-      showToast("Rapor gönderilemedi.");
-      btn.textContent = "Raporla";
-      btn.disabled = false;
+  const buttons = document.createElement("div");
+  buttons.className = "confirm-buttons";
+
+  const yesBtn = document.createElement("button");
+  yesBtn.className = "confirm-yes";
+  yesBtn.style.background = "var(--primary-c)";
+  yesBtn.style.color = "#03130d";
+  yesBtn.textContent = "Evet, raporla";
+  yesBtn.addEventListener("click", async () => {
+    yesBtn.disabled = true;
+    yesBtn.textContent = "Gönderiliyor…";
+
+    const reportId = `${comment.id}_${currentUser.uid}`;
+
+    try {
+      await setDoc(doc(db, "reports", reportId), {
+        videoSlug: slug,
+        commentId: comment.id,
+        commentTextSnapshot: comment.text,
+        commentAuthorId: comment.userId,
+        reportedBy: currentUser.uid,
+        createdAt: serverTimestamp(),
+      });
+      overlay.remove();
+      showToast("Rapor gönderildi.");
+      // Raporla butonunu güncelle
+      const reportBtn = card.querySelector(".report-btn");
+      if (reportBtn) {
+        reportBtn.textContent = "✓";
+        reportBtn.disabled = true;
+        reportBtn.title = "Raporlandı";
+      }
+    } catch (err) {
+      overlay.remove();
+      if (err.code === "permission-denied") {
+        showToast("Bu yorumu zaten raporlamıştın.");
+        const reportBtn = card.querySelector(".report-btn");
+        if (reportBtn) {
+          reportBtn.textContent = "✓";
+          reportBtn.disabled = true;
+          reportBtn.title = "Raporlandı";
+        }
+      } else {
+        console.error("Rapor gönderilemedi:", err);
+        showToast("Rapor gönderilemedi.");
+      }
     }
-  }
+  });
+
+  const noBtn = document.createElement("button");
+  noBtn.className = "confirm-no";
+  noBtn.textContent = "Vazgeç";
+  noBtn.addEventListener("click", () => overlay.remove());
+
+  buttons.append(noBtn, yesBtn);
+  overlay.append(msg, buttons);
+  card.appendChild(overlay);
 }
 
 // ---------------------------------------------------------------
@@ -308,7 +344,7 @@ function renderCommentForm() {
     prompt.className = "comment-login-prompt";
 
     const link = document.createElement("a");
-    link.href = "auth.html";
+    link.href = "/giris";
     link.textContent = "Giriş yap";
 
     prompt.append("Yorum yazmak için ", link, " ");
@@ -432,7 +468,10 @@ async function checkBanStatus(uid) {
 function waitForSlug() {
   return new Promise((resolve) => {
     const check = () => {
-      const s = new URLSearchParams(window.location.search).get("slug");
+      const path = window.location.pathname;
+      const s = path.startsWith("/izle/")
+        ? decodeURIComponent(path.slice(6))
+        : new URLSearchParams(window.location.search).get("slug");
       if (s) return resolve(s);
       setTimeout(check, 50);
     };

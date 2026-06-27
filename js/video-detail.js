@@ -27,6 +27,12 @@ const momentsEmpty  = document.getElementById("moments-empty");
 // ---------------------------------------------------------------
 
 function getSlugFromUrl() {
+  // Temiz URL: /izle/slug-name
+  const path = window.location.pathname;
+  if (path.startsWith("/izle/")) {
+    return decodeURIComponent(path.slice(6));
+  }
+  // Fallback: ?slug=slug-name
   return new URLSearchParams(window.location.search).get("slug");
 }
 
@@ -172,7 +178,7 @@ function buildEpisodeRail(allVideos, currentSlug) {
 function createEpCard(video) {
   const a = document.createElement("a");
   a.className = "ep-card";
-  a.href = `video.html?slug=${encodeURIComponent(video.slug)}`;
+  a.href = `/izle/${encodeURIComponent(video.slug)}`;
 
   const num = document.createElement("span");
   num.className = "t-overline ep-number";
@@ -206,7 +212,7 @@ function buildNavBar(allVideos, currentSlug) {
   if (prev) {
     const btn = document.createElement("a");
     btn.className = "btn-prev";
-    btn.href = `video.html?slug=${encodeURIComponent(prev.slug)}`;
+    btn.href = `/izle/${encodeURIComponent(prev.slug)}`;
     btn.innerHTML = `<span class="material-symbols-outlined">arrow_back</span> Önceki`;
     navBar.appendChild(btn);
   } else {
@@ -226,7 +232,7 @@ function buildNavBar(allVideos, currentSlug) {
   if (next) {
     const btn = document.createElement("a");
     btn.className = "btn-next";
-    btn.href = `video.html?slug=${encodeURIComponent(next.slug)}`;
+    btn.href = `/izle/${encodeURIComponent(next.slug)}`;
     btn.innerHTML = `Sonraki <span class="material-symbols-outlined">arrow_forward</span>`;
     navBar.appendChild(btn);
   } else {

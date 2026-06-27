@@ -41,7 +41,7 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
   const password = document.getElementById("login-password").value;
   try {
     await loginUser(email, password);
-    window.location.href = "index.html";
+    window.location.href = "/";
   } catch (err) {
     showMessage("login-message", err.message);
   }
@@ -55,7 +55,7 @@ document.getElementById("register-form").addEventListener("submit", async (e) =>
   const password = document.getElementById("register-password").value;
   try {
     await registerUser(email, password, username);
-    window.location.href = "index.html";
+    window.location.href = "/";
   } catch (err) {
     showMessage("register-message", err.message);
   }

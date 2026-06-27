@@ -181,7 +181,7 @@ async function loadVideosForSeries(seriesId, wrapperEl) {
     videos.forEach((v) => {
       const item = document.createElement("a");
       item.className = "video-item";
-      item.href = `video.html?slug=${encodeURIComponent(v.slug)}`;
+      item.href = `/izle/${encodeURIComponent(v.slug)}`;
 
       // Thumbnail
       const thumb = document.createElement("div");
