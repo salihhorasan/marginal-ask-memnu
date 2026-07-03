@@ -220,6 +220,27 @@ footer {
   opacity: 0.9;
 }
 .footer-links a:hover { color: var(--secondary); opacity: 1; }
+.footer-links button {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text-m);
+  text-decoration: underline;
+  transition: color 0.2s;
+  opacity: 0.9;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.footer-links button:hover:not(:disabled) { color: var(--secondary); opacity: 1; }
+.footer-links button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  text-decoration: none;
+}
 
 @media (min-width: 1024px) {
   footer {

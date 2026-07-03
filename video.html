@@ -51,8 +51,7 @@
       <video id="video-player"
         controls
         preload="auto"
-        controlsList="nodownload noremoteplayback"
-        disablepictureinpicture="false">
+        controlsList="nodownload noremoteplayback">
         Tarayıcınız video etiketini desteklemiyor.
       </video>
     </div>
@@ -109,11 +108,13 @@
     <a href="/">Ana Sayfa</a>
     <a href="/hukuki#gizlilik">Gizlilik</a>
     <a href="/hukuki#kosullar">Koşullar</a>
+    <button type="button" id="cache-reset-btn" disabled>Sıfırla</button>
   </div>
 </footer>
 
 <script type="module" src="/js/header.js"></script>
 <script type="module" src="/js/video-detail.js"></script>
 <script type="module" src="/js/comments.js"></script>
+<script type="module" src="/js/cache-reset.js"></script>
 </body>
 </html>

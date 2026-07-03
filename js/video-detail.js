@@ -18,6 +18,9 @@ const railContainer = document.getElementById("episode-rail");
 const momentList    = document.getElementById("moment-list");
 const momentsEmpty  = document.getElementById("moments-empty");
 
+let currentSeriesId = null;
+let currentSlug = null;
+
 // ---------------------------------------------------------------
 // Yardımcılar
 // ---------------------------------------------------------------
@@ -333,9 +336,12 @@ async function loadVideo() {
   // Timestamps
   buildTimestamps(data.timestamps || []);
 
+  currentSlug = slug;
+
   // Seri video listesi (cache veya Firestore)
   try {
     const seriesId = data.seriesId;
+    currentSeriesId = seriesId || null;
     if (!seriesId) {
       console.warn("Bu videoda seriesId yok, rail/nav gösterilmiyor.");
       railContainer.style.display = "none";
@@ -357,5 +363,20 @@ async function loadVideo() {
   // Sticky video
   initStickyVideo();
 }
+
+async function reloadSeriesNav() {
+  if (!currentSeriesId || !currentSlug) return;
+  try {
+    const allVideos = await getSeriesVideos(currentSeriesId);
+    buildEpisodeRail(allVideos, currentSlug);
+    buildNavBar(allVideos, currentSlug);
+    railContainer.style.display = "";
+    navBar.style.display = "";
+  } catch (err) {
+    console.error("Bölüm verileri yenilenemedi:", err);
+  }
+}
+
+window.addEventListener("series-cache-cleared", reloadSeriesNav);
 
 loadVideo();

@@ -26,6 +26,7 @@ function createSeriesCard(series, index) {
 
   const wrapper = document.createElement("div");
   wrapper.className = "card-wrapper";
+  wrapper.dataset.seriesId = series.id;
 
   // Gizli checkbox
   const checkbox = document.createElement("input");
@@ -201,3 +202,12 @@ async function loadSeries() {
 }
 
 loadSeries();
+
+window.addEventListener("series-cache-cleared", () => {
+  loadedSeries.clear();
+  document.querySelectorAll(".series-trigger:checked").forEach((checkbox) => {
+    const wrapper = checkbox.closest(".card-wrapper");
+    if (!wrapper?.dataset.seriesId) return;
+    loadVideosForSeries(wrapper.dataset.seriesId, wrapper);
+  });
+});
