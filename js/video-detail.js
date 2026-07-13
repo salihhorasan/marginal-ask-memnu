@@ -2,24 +2,27 @@ import { db } from "./firebase-config.js";
 import {
   doc,
   getDoc,
+  updateDoc,
+  increment,
+  collection,
+  query,
+  where,
+  orderBy,
+  getDocs,
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
-import { getSeriesVideos } from "./series-cache.js";
 
 // ---------------------------------------------------------------
 // DOM referansları
 // ---------------------------------------------------------------
-const titleEl       = document.getElementById("video-title");
-const descEl        = document.getElementById("video-desc");
-const playerShell   = document.getElementById("player-shell");
-const videoPlayer   = document.getElementById("video-player");
-const navBar        = document.getElementById("nav-bar");
-const railTrack     = document.getElementById("episode-rail-track");
+const titleEl = document.getElementById("video-title");
+const descEl = document.getElementById("video-desc");
+const playerShell = document.getElementById("player-shell");
+const videoPlayer = document.getElementById("video-player");
+const navBar = document.getElementById("nav-bar");
+const railTrack = document.getElementById("episode-rail-track");
 const railContainer = document.getElementById("episode-rail");
-const momentList    = document.getElementById("moment-list");
-const momentsEmpty  = document.getElementById("moments-empty");
-
-let currentSeriesId = null;
-let currentSlug = null;
+const momentList = document.getElementById("moment-list");
+const momentsEmpty = document.getElementById("moments-empty");
 
 // ---------------------------------------------------------------
 // Yardımcılar
@@ -50,6 +53,73 @@ function showError(msg) {
   playerShell.style.display = "none";
   navBar.style.display = "none";
   railContainer.style.display = "none";
+}
+
+// ---------------------------------------------------------------
+// localStorage cache (6 saat TTL)
+// ---------------------------------------------------------------
+
+const CACHE_TTL = 6 * 60 * 60 * 1000; // 6 saat (ms)
+
+/** Cache'den seri video listesini oku. Süresi dolmuşsa null döner. */
+function getCachedSeries(seriesId) {
+  try {
+    const raw = localStorage.getItem(`series_${seriesId}`);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (Date.now() - parsed.updatedAt > CACHE_TTL) return null;
+    return parsed.videos;
+  } catch (_) {
+    return null;
+  }
+}
+
+/** Seri video listesini cache'e yaz. */
+function setCachedSeries(seriesId, videos) {
+  try {
+    localStorage.setItem(`series_${seriesId}`, JSON.stringify({
+      updatedAt: Date.now(),
+      videos,
+    }));
+  } catch (_) {
+    // localStorage dolu veya erişilemez — sessizce devam et
+  }
+}
+
+// ---------------------------------------------------------------
+// Seri video listesini getir (cache → Firestore fallback)
+// ---------------------------------------------------------------
+
+async function getSeriesVideos(seriesId) {
+  // 1) Cache'e bak
+  const cached = getCachedSeries(seriesId);
+  if (cached) return cached;
+
+  // 2) Cache yoksa veya süresi dolmuşsa Firestore'dan çek
+  const q = query(
+    collection(db, "videos"),
+    where("isActive", "==", true),
+    where("seriesId", "==", seriesId),
+    orderBy("order", "asc")
+  );
+  const snapshot = await getDocs(q);
+
+  const videos = [];
+  snapshot.forEach((s) => {
+    const d = s.data();
+    videos.push({
+      slug: s.id,
+      title: d.title,
+      order: d.order,
+      archiveId: d.archiveId,
+      description: d.description || "",
+    });
+  });
+
+  // 3) Cache'e yaz
+  setCachedSeries(seriesId, videos);
+
+  return videos;
 }
 
 // ---------------------------------------------------------------
@@ -209,7 +279,7 @@ function buildTimestamps(timestamps) {
     card.addEventListener("click", () => {
       if (videoPlayer) {
         videoPlayer.currentTime = ts.time;
-        videoPlayer.play().catch(() => {});
+        videoPlayer.play().catch(() => { });
         videoPlayer.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     });
@@ -336,12 +406,9 @@ async function loadVideo() {
   // Timestamps
   buildTimestamps(data.timestamps || []);
 
-  currentSlug = slug;
-
   // Seri video listesi (cache veya Firestore)
   try {
     const seriesId = data.seriesId;
-    currentSeriesId = seriesId || null;
     if (!seriesId) {
       console.warn("Bu videoda seriesId yok, rail/nav gösterilmiyor.");
       railContainer.style.display = "none";
@@ -362,21 +429,63 @@ async function loadVideo() {
 
   // Sticky video
   initStickyVideo();
+
+  // İzlenme sayacı
+  initViewTracking(slug);
 }
 
-async function reloadSeriesNav() {
-  if (!currentSeriesId || !currentSlug) return;
+// ---------------------------------------------------------------
+// İzlenme sayacı (5 dk play time + 24 saat cooldown)
+// ---------------------------------------------------------------
+
+const VIEW_COOLDOWN = 24 * 60 * 60 * 1000; // 24 saat
+const VIEW_THRESHOLD = 5 * 60; // 5 dakika (saniye)
+
+function initViewTracking(slug) {
+  // 24 saat içinde zaten sayıldıysa takip etme
+  const viewKey = `view_${slug}`;
   try {
-    const allVideos = await getSeriesVideos(currentSeriesId);
-    buildEpisodeRail(allVideos, currentSlug);
-    buildNavBar(allVideos, currentSlug);
-    railContainer.style.display = "";
-    navBar.style.display = "";
+    const lastView = localStorage.getItem(viewKey);
+    if (lastView && Date.now() - parseInt(lastView) < VIEW_COOLDOWN) return;
+  } catch (_) { }
+
+  let totalPlayTime = 0;
+  let lastTime = 0;
+  let viewCounted = false;
+
+  videoPlayer.addEventListener("timeupdate", () => {
+    if (viewCounted) return;
+
+    const current = videoPlayer.currentTime;
+    // Normal oynatma: zaman farkı 0-2 saniye arası (seek değil)
+    if (current > lastTime && current - lastTime < 2) {
+      totalPlayTime += current - lastTime;
+    }
+    lastTime = current;
+
+    if (totalPlayTime >= VIEW_THRESHOLD) {
+      viewCounted = true;
+      countView(slug);
+    }
+  });
+}
+
+async function countView(slug) {
+  try {
+    await updateDoc(doc(db, "videos", slug), {
+      viewCount: increment(1),
+    });
+    // Cooldown kaydet
+    try {
+      localStorage.setItem(`view_${slug}`, String(Date.now()));
+    } catch (_) { }
   } catch (err) {
-    console.error("Bölüm verileri yenilenemedi:", err);
+    console.error("İzlenme sayılamadı:", err);
   }
 }
 
-window.addEventListener("series-cache-cleared", reloadSeriesNav);
+export function getCurrentSlug() {
+  return getSlugFromUrl();
+}
 
 loadVideo();
