@@ -95,6 +95,31 @@ body {
 }
 
 /* ══════════════════
+    DYNAMIC BANNER
+    ══════════════════ */
+#dynamic-banner {
+  position: relative;
+  width: 100%;
+  background: var(--surface-3);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-p);
+  text-align: center;
+  padding: 8px 16px;
+  z-index: 55; /* topbar'ın (50) üzerinde */
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 36px;
+}
+#dynamic-banner .banner-text {
+  max-width: 900px;
+  line-height: 1.4;
+}
+
+/* ══════════════════
     TOP NAV
     ══════════════════ */
 nav.topbar {

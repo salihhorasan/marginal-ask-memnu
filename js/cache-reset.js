@@ -41,6 +41,7 @@ if (resetBtn) {
     if (!canResetSeriesCache()) return;
 
     clearAllSeriesCache();
+    localStorage.removeItem("banner_config_cache");
     window.dispatchEvent(new CustomEvent("series-cache-cleared"));
     updateResetButton();
   });
