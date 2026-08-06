@@ -1,0 +1,14 @@
+# Tüm metin dosyaları depoda LF olarak saklanır.
+# Windows'ta çalışırken editör CRLF yazsa bile git bunu normalize eder,
+# böylece "sadece satır sonu değişti" diye sahte diff çıkmaz.
+* text=auto eol=lf
+
+# Binary dosyalara dokunma
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.mp4 binary

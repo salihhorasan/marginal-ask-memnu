@@ -142,29 +142,66 @@ function showDeleteConfirm(panel, deleteBtn) {
   warning.className = "profile-confirm-text";
   warning.textContent = "Hesabın kalıcı olarak silinecek. Bu işlem geri alınamaz. Yorumların kalır ama kullanıcı adın \"Silinmiş Kullanıcı\" olarak görünür.";
 
+  // Şifre doğrulaması: Firebase hesap silme için son girişin taze olmasını
+  // istiyor. Şifreyi burada alıp yeniden kimlik doğrulaması yapmazsak,
+  // silme işlemi yarıda kalıp hesabı bozuk bırakabiliyor.
+  const passLabel = document.createElement("label");
+  passLabel.className = "profile-confirm-label";
+  passLabel.textContent = "Onaylamak için şifreni gir";
+  passLabel.htmlFor = "profile-delete-password";
+
+  const passInput = document.createElement("input");
+  passInput.type = "password";
+  passInput.id = "profile-delete-password";
+  passInput.className = "profile-confirm-input";
+  passInput.autocomplete = "current-password";
+  passInput.placeholder = "Şifre";
+
   const buttons = document.createElement("div");
   buttons.className = "profile-confirm-buttons";
 
   const yesBtn = document.createElement("button");
   yesBtn.className = "confirm-yes";
   yesBtn.textContent = "Evet, Hesabımı Sil";
-  yesBtn.addEventListener("click", async () => {
+  yesBtn.disabled = true;
+
+  function hataGoster(metin) {
+    const msg = document.getElementById("profile-message");
+    if (msg) {
+      msg.textContent = metin;
+      msg.style.color = "var(--danger)";
+    }
+  }
+
+  passInput.addEventListener("input", () => {
+    yesBtn.disabled = passInput.value.length === 0;
+    const msg = document.getElementById("profile-message");
+    if (msg) msg.textContent = "";
+  });
+
+  async function silmeyiCalistir() {
+    if (yesBtn.disabled) return;
     yesBtn.disabled = true;
     yesBtn.textContent = "Siliniyor…";
     noBtn.disabled = true;
+    passInput.disabled = true;
     try {
-      await deleteAccount();
+      await deleteAccount(passInput.value);
       window.location.href = "/";
     } catch (err) {
-      const msg = document.getElementById("profile-message");
-      if (msg) {
-        msg.textContent = err.message;
-        msg.style.color = "var(--danger)";
-      }
+      hataGoster(err.message);
       yesBtn.textContent = "Evet, Hesabımı Sil";
-      yesBtn.disabled = false;
+      yesBtn.disabled = passInput.value.length === 0;
       noBtn.disabled = false;
+      passInput.disabled = false;
+      passInput.focus();
+      passInput.select();
     }
+  }
+
+  yesBtn.addEventListener("click", silmeyiCalistir);
+  passInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") silmeyiCalistir();
   });
 
   const noBtn = document.createElement("button");
@@ -173,11 +210,15 @@ function showDeleteConfirm(panel, deleteBtn) {
   noBtn.addEventListener("click", () => {
     confirm.remove();
     deleteBtn.style.display = "";
+    const msg = document.getElementById("profile-message");
+    if (msg) msg.textContent = "";
   });
 
   buttons.append(noBtn, yesBtn);
-  confirm.append(warning, buttons);
+  confirm.append(warning, passLabel, passInput, buttons);
   panel.appendChild(confirm);
+
+  passInput.focus();
 }
 
 // ---------------------------------------------------------------

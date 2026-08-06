@@ -3,12 +3,15 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
   deleteUser,
   signOut,
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 import {
   doc,
   getDoc,
+  setDoc,
   deleteDoc,
   runTransaction,
   serverTimestamp,
@@ -126,45 +129,122 @@ export async function resetPassword(email) {
 // Hesap silme (kullanıcı kendi hesabını siler)
 // ---------------------------------------------------------------
 
-export async function deleteAccount() {
+/**
+ * Hesabı kalıcı olarak sil.
+ *
+ * ESKİ AKIŞTAKİ HATA:
+ * Sıra "usernames sil → users sil → Auth sil" idi. Son adım
+ * `auth/requires-recent-login` ile patlayabiliyordu — Firebase, hesap silme
+ * gibi hassas işlemler için son girişin taze olmasını istiyor. Patladığında
+ * Firestore belgeleri çoktan silinmiş oluyordu ve kullanıcı yarım silinmiş
+ * hâlde kalıyordu: giriş yapabiliyor ama yorum yazamıyor (rules'taki
+ * isNotBanned() var olmayan users belgesini okuyamayıp reddediyor) ve
+ * sebebini asla anlayamıyor.
+ *
+ * YENİ AKIŞ — iki katmanlı savunma:
+ * 1) Önce şifreyle yeniden kimlik doğrulama. Bu, son adımın patlama
+ *    ihtimalini pratikte sıfırlıyor.
+ * 2) Buna rağmen patlarsa Firestore belgeleri geri yazılıyor. Kullanıcı
+ *    çalışır hâlde kalıyor.
+ *
+ * @param {string} password  Kullanıcının mevcut şifresi
+ */
+export async function deleteAccount(password) {
   const user = auth.currentUser;
   if (!user) throw new Error("Giriş yapmış bir kullanıcı bulunamadı.");
+  if (!password) throw new Error("Devam etmek için şifreni gir.");
 
   const uid = user.uid;
 
-  // 1) Kullanıcının username'ini bul (usernames dokümanını silmek için)
+  // --- 1) Yeniden kimlik doğrulama ---
+  try {
+    const credential = EmailAuthProvider.credential(user.email, password);
+    await reauthenticateWithCredential(user, credential);
+  } catch (err) {
+    if (err.code === "auth/wrong-password" || err.code === "auth/invalid-credential") {
+      throw new Error("Şifre hatalı.");
+    }
+    if (err.code === "auth/too-many-requests") {
+      throw new Error("Çok fazla deneme yapıldı, lütfen biraz sonra tekrar dene.");
+    }
+    throw new Error(translateError(err.code));
+  }
+
+  // --- 2) Geri yükleme için mevcut veriyi hatırla ---
+  let userData = null;
+  let usernameLower = null;
   try {
     const userSnap = await getDoc(doc(db, "users", uid));
     if (userSnap.exists()) {
-      const username = userSnap.data().username;
-      if (username) {
-        const usernameLower = username.toLowerCase();
-        // 2) usernames dokümanını sil
-        try {
-          await deleteDoc(doc(db, "usernames", usernameLower));
-        } catch (_) {
-          // Silinemezse devam et — kritik değil
-        }
-      }
+      userData = userSnap.data();
+      if (userData.username) usernameLower = userData.username.toLowerCase();
     }
   } catch (_) {
-    // users okunamazsa devam et
+    // users okunamazsa geri yükleme yapamayız ama silmeye devam edebiliriz
   }
 
-  // 3) users dokümanını sil
+  // --- 3) Firestore belgelerini sil ---
+  let usernameSilindi = false;
+  let userSilindi = false;
+
+  if (usernameLower) {
+    try {
+      await deleteDoc(doc(db, "usernames", usernameLower));
+      usernameSilindi = true;
+    } catch (_) {
+      // Silinemezse devam et — kritik değil
+    }
+  }
+
   try {
     await deleteDoc(doc(db, "users", uid));
+    userSilindi = true;
   } catch (_) {
     // Silinemezse devam et
   }
 
-  // 4) Firebase Auth hesabını sil
+  // --- 4) Auth hesabını sil ---
   try {
     await deleteUser(user);
   } catch (err) {
+    // Buraya normalde hiç girilmemeli (1. adım tazeliği garantiledi).
+    // Girilirse kullanıcıyı yarım silinmiş bırakmamak için geri al.
+    await geriYukle(uid, userData, usernameLower, usernameSilindi, userSilindi);
+
     if (err.code === "auth/requires-recent-login") {
-      throw new Error("Güvenlik nedeniyle hesabınızı silmek için tekrar giriş yapmanız gerekiyor. Çıkış yapıp tekrar giriş yaptıktan sonra deneyin.");
+      throw new Error("Oturum doğrulaması zaman aşımına uğradı. Lütfen tekrar dene.");
     }
-    throw new Error("Hesap silinirken bir hata oluştu.");
+    throw new Error("Hesap silinemedi. Hesabın olduğu gibi duruyor, tekrar deneyebilirsin.");
+  }
+}
+
+/**
+ * Auth silme başarısız olursa Firestore belgelerini geri yaz.
+ *
+ * Not: users belgesindeki createdAt geri yüklenemiyor — rules
+ * `createdAt == request.time` şartı koyuyor, yani kayıt tarihi bugüne
+ * sıfırlanıyor. Hesabın tamamen kilitlenmesine kıyasla kabul edilebilir.
+ */
+async function geriYukle(uid, userData, usernameLower, usernameSilindi, userSilindi) {
+  if (usernameSilindi && usernameLower && userData?.username) {
+    try {
+      await setDoc(doc(db, "usernames", usernameLower), {
+        uid,
+        displayUsername: userData.username,
+      });
+    } catch (_) {}
+  }
+
+  if (userSilindi && userData) {
+    try {
+      await setDoc(doc(db, "users", uid), {
+        email: userData.email,
+        username: userData.username,
+        createdAt: serverTimestamp(),
+        isBanned: false,
+        bannedAt: null,
+        banReason: null,
+      });
+    } catch (_) {}
   }
 }

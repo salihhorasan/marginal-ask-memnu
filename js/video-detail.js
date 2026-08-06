@@ -1,14 +1,10 @@
 import { db } from "./firebase-config.js";
+import { getSeriesVideos } from "./series-cache.js";
 import {
   doc,
   getDoc,
   updateDoc,
   increment,
-  collection,
-  query,
-  where,
-  orderBy,
-  getDocs,
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
 // ---------------------------------------------------------------
@@ -47,79 +43,44 @@ function formatTime(totalSeconds) {
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
+let videoHatasiGosterildi = false;
+
+/** Video dosyası yüklenemedi — player'ın yerine mesaj koy. */
+function showVideoLoadError() {
+  if (videoHatasiGosterildi) return;
+  videoHatasiGosterildi = true;
+
+  videoPlayer.style.display = "none";
+
+  const kutu = document.createElement("div");
+  kutu.className = "player-error";
+
+  const icon = document.createElement("span");
+  icon.className = "material-symbols-outlined";
+  icon.textContent = "videocam_off";
+
+  const p = document.createElement("p");
+  p.textContent = "Video şu anda yüklenemiyor.";
+
+  const sub = document.createElement("p");
+  sub.className = "player-error-sub";
+  sub.textContent = "Kaynak geçici olarak erişilemez olabilir. Biraz sonra tekrar dene.";
+
+  kutu.append(icon, p, sub);
+  playerShell.appendChild(kutu);
+}
+
 function showError(msg) {
   titleEl.textContent = msg;
   descEl.textContent = "";
   playerShell.style.display = "none";
   navBar.style.display = "none";
   railContainer.style.display = "none";
-}
 
-// ---------------------------------------------------------------
-// localStorage cache (6 saat TTL)
-// ---------------------------------------------------------------
-
-const CACHE_TTL = 6 * 60 * 60 * 1000; // 6 saat (ms)
-
-/** Cache'den seri video listesini oku. Süresi dolmuşsa null döner. */
-function getCachedSeries(seriesId) {
-  try {
-    const raw = localStorage.getItem(`series_${seriesId}`);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (Date.now() - parsed.updatedAt > CACHE_TTL) return null;
-    return parsed.videos;
-  } catch (_) {
-    return null;
-  }
-}
-
-/** Seri video listesini cache'e yaz. */
-function setCachedSeries(seriesId, videos) {
-  try {
-    localStorage.setItem(`series_${seriesId}`, JSON.stringify({
-      updatedAt: Date.now(),
-      videos,
-    }));
-  } catch (_) {
-    // localStorage dolu veya erişilemez — sessizce devam et
-  }
-}
-
-// ---------------------------------------------------------------
-// Seri video listesini getir (cache → Firestore fallback)
-// ---------------------------------------------------------------
-
-async function getSeriesVideos(seriesId) {
-  // 1) Cache'e bak
-  const cached = getCachedSeries(seriesId);
-  if (cached) return cached;
-
-  // 2) Cache yoksa veya süresi dolmuşsa Firestore'dan çek
-  const q = query(
-    collection(db, "videos"),
-    where("isActive", "==", true),
-    where("seriesId", "==", seriesId),
-    orderBy("order", "asc")
-  );
-  const snapshot = await getDocs(q);
-
-  const videos = [];
-  snapshot.forEach((s) => {
-    const d = s.data();
-    videos.push({
-      slug: s.id,
-      title: d.title,
-      order: d.order,
-      archiveId: d.archiveId,
-      description: d.description || "",
-    });
-  });
-
-  // 3) Cache'e yaz
-  setCachedSeries(seriesId, videos);
-
-  return videos;
+  // Sidebar'ı da gizle — video yoksa "Önemli Anlar" ve yorum kutusu
+  // göstermenin anlamı yok (comments.js boş bir slug için sorgu atmasın).
+  const sidebar = document.querySelector(".sidebar");
+  if (sidebar) sidebar.style.display = "none";
 }
 
 // ---------------------------------------------------------------
@@ -289,6 +250,37 @@ function buildTimestamps(timestamps) {
 }
 
 // ---------------------------------------------------------------
+// Bağlantı hızına göre preload kararı
+// ---------------------------------------------------------------
+
+/**
+ * Veri tasarrufu gerektiren bir bağlantı mı?
+ *
+ * `preload="auto"` bilinçli bir tercih: kullanıcı oynat'a bastığında video
+ * beklemeden başlasın diye. Bedeli, sayfayı açıp hemen kapatan birinin bile
+ * onlarca MB indirmesi. Bu fonksiyon sadece gerçekten sıkışık bağlantılarda
+ * `metadata`'ya düşmemizi sağlıyor.
+ *
+ * navigator.connection Safari ve Firefox'ta yok (MDN: "limited availability").
+ * Sorun değil: `preload="auto"`yu zaten yok sayan tarayıcı iOS Safari ve
+ * API'si olmayan da o. Mobil veride auto'yu gerçekten uygulayan Android
+ * Chrome ise API'yi sunuyor. API yoksa hiçbir şey yapmıyoruz.
+ *
+ * Okunan değer hiçbir yere gönderilmiyor, sadece burada karar için kullanılıyor.
+ */
+function tasarrufluBaglantiMi() {
+  const c = navigator.connection;
+  if (!c) return false;              // API yok → karışma, auto kalsın
+  if (c.saveData) return true;       // kullanıcı açıkça veri tasarrufu istemiş
+
+  // effectiveType radyo tipi değil, tarayıcının gözlemlediği gecikme/hızdan
+  // hesapladığı deneyim sınıfı. "3g" bilerek dahil edilmedi — makul hızdaki
+  // bağlantılar da o sınıfa düşebiliyor ve anında başlama davranışı bozulurdu.
+  const t = c.effectiveType;
+  return t === "slow-2g" || t === "2g";
+}
+
+// ---------------------------------------------------------------
 // Accordion toggle
 // ---------------------------------------------------------------
 
@@ -394,10 +386,23 @@ async function loadVideo() {
   descEl.textContent = data.description || "";
 
   // Video kaynağı
+  // NOT: Archive.org'daki dosya adının identifier ile aynı ve .mp4 olduğu
+  // varsayılıyor. Bu varsayım tutmazsa aşağıdaki error dinleyicisi devreye girer.
   const videoSrc = `https://archive.org/download/${data.archiveId}/${data.archiveId}.mp4`;
   const source = document.createElement("source");
   source.src = videoSrc;
   source.type = "video/mp4";
+
+  // Kaynak yüklenemezse kullanıcıya söyle — eskiden sessizce boş player kalıyordu
+  source.addEventListener("error", showVideoLoadError);
+  videoPlayer.addEventListener("error", showVideoLoadError);
+
+  // Sıkışık bağlantıda tüm videoyu indirme. Kaynak henüz eklenmediği için
+  // tarayıcı hiçbir şey indirmeye başlamadı — burada değiştirmek güvenli.
+  if (tasarrufluBaglantiMi()) {
+    videoPlayer.preload = "metadata";
+  }
+
   videoPlayer.prepend(source);
 
   // Sağ tık engelle (caydırıcı)
@@ -407,31 +412,42 @@ async function loadVideo() {
   buildTimestamps(data.timestamps || []);
 
   // Seri video listesi (cache veya Firestore)
-  try {
-    const seriesId = data.seriesId;
-    if (!seriesId) {
-      console.warn("Bu videoda seriesId yok, rail/nav gösterilmiyor.");
-      railContainer.style.display = "none";
-      navBar.style.display = "none";
-    } else {
-      const allVideos = await getSeriesVideos(seriesId);
-      buildEpisodeRail(allVideos, slug);
-      buildNavBar(allVideos, slug);
-    }
-  } catch (err) {
-    console.error("Bölüm verileri yüklenemedi:", err);
-    railContainer.style.display = "none";
-    navBar.style.display = "none";
-  }
+  await buildSeriesUI(data.seriesId, slug);
 
-  // Slug'ı global sakla (comments.js için)
-  window.__currentVideoSlug = slug;
+  // Önbellek sıfırlanınca rail ve önceki/sonraki'yi tazele.
+  // (Eskiden bu dinleyici yoktu; footer'daki "Sıfırla" video sayfasında
+  //  görünürde hiçbir şey yapmıyordu, sayfa yenilenene kadar eski veri kalıyordu.)
+  window.addEventListener("series-cache-cleared", () => {
+    buildSeriesUI(data.seriesId, slug);
+  });
 
   // Sticky video
   initStickyVideo();
 
   // İzlenme sayacı
   initViewTracking(slug);
+}
+
+/** Episode rail + önceki/sonraki navigasyonunu kur. */
+async function buildSeriesUI(seriesId, slug) {
+  if (!seriesId) {
+    console.warn("Bu videoda seriesId yok, rail/nav gösterilmiyor.");
+    railContainer.style.display = "none";
+    navBar.style.display = "none";
+    return;
+  }
+
+  try {
+    const allVideos = await getSeriesVideos(seriesId);
+    railContainer.style.display = "";
+    navBar.style.display = "";
+    buildEpisodeRail(allVideos, slug);
+    buildNavBar(allVideos, slug);
+  } catch (err) {
+    console.error("Bölüm verileri yüklenemedi:", err);
+    railContainer.style.display = "none";
+    navBar.style.display = "none";
+  }
 }
 
 // ---------------------------------------------------------------
@@ -451,11 +467,8 @@ function initViewTracking(slug) {
 
   let totalPlayTime = 0;
   let lastTime = 0;
-  let viewCounted = false;
 
-  videoPlayer.addEventListener("timeupdate", () => {
-    if (viewCounted) return;
-
+  function onTimeUpdate() {
     const current = videoPlayer.currentTime;
     // Normal oynatma: zaman farkı 0-2 saniye arası (seek değil)
     if (current > lastTime && current - lastTime < 2) {
@@ -464,10 +477,13 @@ function initViewTracking(slug) {
     lastTime = current;
 
     if (totalPlayTime >= VIEW_THRESHOLD) {
-      viewCounted = true;
+      // İş bitti — dinleyiciyi kaldır, boşuna tetiklenmesin
+      videoPlayer.removeEventListener("timeupdate", onTimeUpdate);
       countView(slug);
     }
-  });
+  }
+
+  videoPlayer.addEventListener("timeupdate", onTimeUpdate);
 }
 
 async function countView(slug) {

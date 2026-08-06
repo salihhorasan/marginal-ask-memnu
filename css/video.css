@@ -6,15 +6,20 @@
 /* ══════════════════
     EPISODE RAIL
     ══════════════════ */
+/* min-height: içerik Firestore'dan gelene kadar bu kap boş duruyordu ve
+   dolunca altındaki her şeyi ~90px aşağı itiyordu (CLS). Kartlar 80px +
+   dikey padding 24px = 104px; yer önceden ayrılıyor, görsel olarak fark yok. */
 .episode-rail {
   width: 100%;
   max-width: 100%;
   min-width: 0;
+  min-height: 114px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   padding: 12px 16px;
   overflow-x: auto;
 }
+
 .episode-rail-track {
   display: flex;
   gap: 8px;
@@ -38,7 +43,11 @@
   transition: border-color 0.2s;
   cursor: pointer;
 }
-.ep-card:hover { border-color: var(--primary-c); }
+
+.ep-card:hover {
+  border-color: var(--primary-c);
+}
+
 .ep-card.active {
   width: 160px;
   height: 90px;
@@ -46,7 +55,11 @@
   border-color: var(--primary-c);
   cursor: default;
 }
-.ep-card .ep-number { color: var(--text-m); }
+
+.ep-card .ep-number {
+  color: var(--text-m);
+}
+
 .ep-card .ep-title {
   color: var(--text-p);
   text-align: center;
@@ -59,6 +72,7 @@
   font-weight: 850;
   line-height: 1.2;
 }
+
 .ep-card.active .ep-watching {
   color: var(--primary-c);
   margin-bottom: 4px;
@@ -67,16 +81,20 @@
 /* ══════════════════
     NAV BAR (Önceki / Sonraki)
     ══════════════════ */
+/* min-height: rail ile aynı sebep — bu kap da JS ile doluyor.
+   Buton yüksekliği (13px satır + 2×10px padding = 33px) + 2×12px dikey padding. */
 .nav-bar {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
+  min-height: 57px;
   padding: 12px 0;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
 }
 
-.btn-prev, .btn-next {
+.btn-prev,
+.btn-next {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -92,22 +110,37 @@
   line-height: 1;
   text-decoration: none;
 }
+
 .btn-prev {
   justify-self: start;
   background: var(--surface-2);
   border: 1px solid var(--border-s);
   color: var(--text-p);
 }
-.btn-prev:hover { border-color: var(--primary-c); }
-.btn-prev .material-symbols-outlined { color: var(--primary-c); font-size: 18px; }
+
+.btn-prev:hover {
+  border-color: var(--primary-c);
+}
+
+.btn-prev .material-symbols-outlined {
+  color: var(--primary-c);
+  font-size: 18px;
+}
 
 .btn-next {
   justify-self: end;
   background: var(--primary-c);
   color: #03130d;
 }
-.btn-next:hover { opacity: 0.9; }
-.btn-next .material-symbols-outlined { color: #03130d; font-size: 18px; }
+
+.btn-next:hover {
+  opacity: 0.9;
+}
+
+.btn-next .material-symbols-outlined {
+  color: #03130d;
+  font-size: 18px;
+}
 
 .nav-bar-episode-info {
   justify-self: center;
@@ -158,6 +191,7 @@
   border-bottom: 1px solid var(--border);
   padding-bottom: 16px;
 }
+
 .video-title {
   font-family: 'Hanken Grotesk', sans-serif;
   font-size: 28px;
@@ -167,6 +201,7 @@
   color: var(--text-p);
   margin-bottom: 10px;
 }
+
 .video-desc {
   color: var(--text-m);
   font-size: 15px;
@@ -184,6 +219,7 @@
   overflow: hidden;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
 }
+
 .player-shell video {
   position: absolute;
   inset: 0;
@@ -192,7 +228,10 @@
   border: none;
   background: #000;
 }
-.player-placeholder { display: none; }
+
+.player-placeholder {
+  display: none;
+}
 
 /* ══════════════════
     SIDEBAR
@@ -205,8 +244,13 @@
 }
 
 /* ── Accordion ── */
-.accordion-block { border-bottom: 1px solid var(--border); }
-.accordion-block:last-child { border-bottom: none; }
+.accordion-block {
+  border-bottom: 1px solid var(--border);
+}
+
+.accordion-block:last-child {
+  border-bottom: none;
+}
 
 .accordion-header {
   display: flex;
@@ -217,7 +261,10 @@
   user-select: none;
   gap: 8px;
 }
-.accordion-header:hover { background: rgba(255, 255, 255, 0.02); }
+
+.accordion-header:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
 
 .accordion-arrow {
   font-size: 18px;
@@ -226,7 +273,10 @@
   flex-shrink: 0;
   font-variation-settings: 'FILL' 0, 'wght' 400;
 }
-.accordion-block.open .accordion-arrow { transform: rotate(180deg); }
+
+.accordion-block.open .accordion-arrow {
+  transform: rotate(180deg);
+}
 
 .accordion-body {
   overflow: hidden;
@@ -234,13 +284,23 @@
   transition: max-height 0.3s ease;
   padding: 0 24px;
 }
-.accordion-block.open .accordion-body { max-height: 2000px; }
-.accordion-inner { padding-bottom: 20px; }
+
+.accordion-block.open .accordion-body {
+  max-height: 2000px;
+}
+
+.accordion-inner {
+  padding-bottom: 20px;
+}
 
 /* ══════════════════
     MOMENT CARDS (Timestamps)
     ══════════════════ */
-.moment-list { display: flex; flex-direction: column; gap: 8px; }
+.moment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 
 .moment-card {
   background: var(--surface-2);
@@ -252,7 +312,10 @@
   cursor: pointer;
   transition: border-color 0.2s;
 }
-.moment-card:hover { border-color: var(--border-s); }
+
+.moment-card:hover {
+  border-color: var(--border-s);
+}
 
 .moment-time {
   font-family: 'JetBrains Mono', monospace;
@@ -261,6 +324,7 @@
   color: var(--secondary);
   flex-shrink: 0;
 }
+
 .moment-title {
   font-family: 'Hanken Grotesk', sans-serif;
   font-size: 14px;
@@ -272,7 +336,11 @@
 /* ══════════════════
     COMMENT CARDS
     ══════════════════ */
-.comment-list { display: flex; flex-direction: column; gap: 14px; }
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
 
 .comment-card {
   background: var(--surface-3);
@@ -289,12 +357,14 @@
   justify-content: space-between;
   align-items: center;
 }
+
 .comment-user {
   font-family: 'Hanken Grotesk', sans-serif;
   font-size: 14px;
   font-weight: 850;
   color: var(--text-p);
 }
+
 .comment-date {
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
@@ -303,6 +373,7 @@
   text-transform: uppercase;
   color: var(--text-m);
 }
+
 .comment-text {
   font-size: 15px;
   line-height: 1.5;
@@ -314,6 +385,7 @@
   gap: 8px;
   margin-top: 4px;
 }
+
 .comment-action-btn {
   background: none;
   border: none;
@@ -327,9 +399,19 @@
   transition: all 0.2s;
   white-space: nowrap;
 }
-.comment-action-btn.delete-btn { color: var(--danger); }
-.comment-action-btn.delete-btn:hover { background: rgba(231, 76, 60, 0.1); }
-.comment-action-btn.report-btn { color: var(--text-m); }
+
+.comment-action-btn.delete-btn {
+  color: var(--danger);
+}
+
+.comment-action-btn.delete-btn:hover {
+  background: rgba(231, 76, 60, 0.1);
+}
+
+.comment-action-btn.report-btn {
+  color: var(--text-m);
+}
+
 .comment-action-btn.report-btn:hover {
   color: var(--text-p);
   background: rgba(255, 255, 255, 0.04);
@@ -344,6 +426,7 @@
   padding-bottom: 16px;
   border-bottom: 1px solid var(--border);
 }
+
 .comment-form textarea {
   width: 100%;
   min-height: 80px;
@@ -357,10 +440,12 @@
   resize: vertical;
   transition: border-color 0.2s;
 }
+
 .comment-form textarea:focus {
   outline: none;
   border-color: var(--primary-c);
 }
+
 .comment-form textarea::placeholder {
   color: var(--text-m);
   opacity: 0.6;
@@ -371,12 +456,16 @@
   justify-content: space-between;
   align-items: center;
 }
+
 .comment-char-count {
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
   color: var(--text-m);
 }
-.comment-char-count.over { color: var(--danger); }
+
+.comment-char-count.over {
+  color: var(--danger);
+}
 
 .comment-submit-btn {
   background: var(--primary-c);
@@ -391,8 +480,15 @@
   cursor: pointer;
   transition: opacity 0.2s;
 }
-.comment-submit-btn:hover { opacity: 0.9; }
-.comment-submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.comment-submit-btn:hover {
+  opacity: 0.9;
+}
+
+.comment-submit-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
 
 .comment-login-prompt {
   padding: 12px;
@@ -403,12 +499,292 @@
   font-size: 14px;
   color: var(--text-m);
 }
+
 .comment-login-prompt a {
   color: var(--primary-c);
   text-decoration: none;
   font-weight: 700;
 }
-.comment-login-prompt a:hover { text-decoration: underline; }
+
+.comment-login-prompt a:hover {
+  text-decoration: underline;
+}
+
+/* ══════════════════
+    DAHA FAZLA YORUM
+    ══════════════════ */
+.comment-more-btn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px 16px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-m);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.comment-more-btn:hover:not(:disabled) {
+  border-color: var(--primary-c);
+  color: var(--primary-c);
+}
+
+.comment-more-btn:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+/* ══════════════════
+    YORUM YAZ BUTONU
+    ══════════════════ */
+.comment-trigger-btn {
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-s);
+  color: var(--text-p);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+
+.comment-trigger-btn:hover:not(:disabled) {
+  border-color: var(--primary-c);
+  color: var(--primary-c);
+}
+
+.comment-trigger-btn:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.comment-trigger-btn .material-symbols-outlined {
+  font-size: 18px;
+}
+
+/* ══════════════════
+    YORUM MODALI
+    ══════════════════ */
+body.comment-modal-open {
+  overflow: hidden;
+}
+
+.comment-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  /* topbar 50, profil paneli 60'ın üstünde */
+  background: rgba(5, 8, 6, 0);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  transition: background 0.25s ease;
+}
+
+.comment-modal-overlay.open {
+  background: rgba(5, 8, 6, 0.85);
+  pointer-events: auto;
+}
+
+.comment-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  width: 90%;
+  max-width: 520px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.comment-modal-overlay.open .comment-modal {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.comment-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.comment-modal-title {
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 17px;
+  font-weight: 850;
+  color: var(--text-p);
+}
+
+.comment-modal-close {
+  background: none;
+  border: none;
+  color: var(--text-m);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  transition: color 0.2s;
+}
+
+.comment-modal-close:hover {
+  color: var(--text-p);
+}
+
+.comment-modal-body {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* Modal içindeki form kendi ayırıcısını taşımasın */
+.comment-modal-body .comment-form {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.comment-modal-body .comment-form textarea {
+  min-height: 120px;
+}
+
+/* ── Modal bildirimleri (giriş gerekli / banlı) ── */
+.comment-notice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.comment-notice-text {
+  font-size: 15px;
+  color: var(--text-p);
+  line-height: 1.5;
+}
+
+.comment-notice-sub {
+  font-size: 13px;
+  color: var(--text-m);
+  line-height: 1.5;
+}
+
+.comment-notice-action {
+  display: inline-block;
+  background: var(--primary-c);
+  color: #03130d;
+  padding: 10px 28px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.comment-notice-action:hover {
+  opacity: 0.9;
+}
+
+/* ── Mobil: alttan açılan sheet ── */
+@media (max-width: 767px) {
+  .comment-modal-overlay {
+    align-items: flex-end;
+  }
+
+  .comment-modal {
+    width: 100%;
+    max-width: none;
+    max-height: 88vh;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    transform: translateY(100%);
+  }
+
+  .comment-modal-overlay.open .comment-modal {
+    transform: translateY(0);
+  }
+
+  /* Sheet ekranın en altına yaslandığı için buton/gönder tuşu cihazın alt
+     kenarına ve gestür çubuğuna yapışıyordu. Alta ferah bir pay bırakıyoruz;
+     env() değeri çentikli cihazlarda üstüne ekleniyor. */
+  .comment-modal-body {
+    padding: 32px 16px calc(80px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .comment-modal-body .comment-form textarea {
+    min-height: 100px;
+  }
+
+  /* Bildirim (giriş gerekli / banlı) hâli kısa olduğu için biraz daha nefes alsın */
+  .comment-modal-body .comment-notice {
+    gap: 18px;
+    padding-top: 8px;
+  }
+}
+
+/* Hareket azaltma tercihi olan kullanıcılar için animasyonu kapat */
+@media (prefers-reduced-motion: reduce) {
+
+  .comment-modal,
+  .comment-modal-overlay {
+    transition: none;
+  }
+}
+
+/* ══════════════════
+    VİDEO YÜKLENEMEDİ
+    ══════════════════ */
+.player-error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 24px;
+  text-align: center;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-p);
+}
+
+.player-error .material-symbols-outlined {
+  font-size: 40px;
+  color: var(--text-m);
+}
+
+.player-error p {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.player-error .player-error-sub {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-m);
+  max-width: 320px;
+}
 
 /* ── Silme Onay Overlay ── */
 .confirm-overlay {
@@ -423,6 +799,7 @@
   z-index: 5;
   padding: 16px;
 }
+
 .confirm-overlay p {
   color: var(--text-p);
   font-size: 14px;
@@ -430,7 +807,11 @@
   text-align: center;
 }
 
-.confirm-buttons { display: flex; gap: 10px; }
+.confirm-buttons {
+  display: flex;
+  gap: 10px;
+}
+
 .confirm-yes {
   background: var(--danger);
   color: #fff;
@@ -442,6 +823,7 @@
   text-transform: uppercase;
   cursor: pointer;
 }
+
 .confirm-no {
   background: var(--surface-2);
   color: var(--text-p);
@@ -468,16 +850,24 @@
     border: none;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
   }
-  .player-placeholder.active { display: block; }
+
+  .player-placeholder.active {
+    display: block;
+  }
 }
 
 /* ══════════════════
     DESKTOP (1024px+)
     ══════════════════ */
 @media (min-width: 1024px) {
-  .main-layout { flex-direction: row; }
+  .main-layout {
+    flex-direction: row;
+  }
 
-  .video-section { padding: 42px; gap: 24px; }
+  .video-section {
+    padding: 42px;
+    gap: 24px;
+  }
 
   .video-section .nav-bar {
     margin: -42px -42px 0;

@@ -13,6 +13,15 @@ body.auth-body {
   min-height: 100vh;
 }
 
+/* Auth sayfasında topbar yok, banner body'nin başına eklenir.
+   Ortalanmış layout'u bozmasın diye üste sabitlenir. */
+body.auth-body #dynamic-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
 .auth-wrapper {
   display: flex;
   flex-direction: column;
