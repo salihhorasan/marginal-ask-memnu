@@ -164,6 +164,91 @@
   grid-template-columns: 1fr;
   align-items: stretch;
 }
+
+/* ══════════════════
+    DEVAM ET
+    ══════════════════ */
+.continue-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+}
+@media (min-width: 768px) {
+  .continue-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* İlerleme, ayrı bir çubuk yerine kart gövdesinin arka planına çiziliyor.
+   Sert duraklı bir gradient: sol taraf izlenen kısım. Yeşil, metin
+   okunaklı kalsın diye düşük opaklıkta — --primary-c'nin ta kendisi. */
+.continue-body {
+  background:
+    linear-gradient(
+      to right,
+      rgba(0, 184, 122, 0.22) var(--ilerleme, 0%),
+      transparent var(--ilerleme, 0%)
+    );
+  transition: background 0.3s ease;
+}
+
+/* Çarpı + bölüm rozeti. Masaüstünde başlığın üstünde bir satır,
+   mobilde gövde zaten satır olduğu için akışa doğal katılıyor. */
+.continue-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+.continue-head .video-badge { margin-bottom: 0; }
+
+/* Her zaman görünür — hover'a bağlı değil, mobilde de masaüstünde de. */
+.continue-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--primary-c);
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.continue-remove .material-symbols-outlined {
+  font-size: 18px;
+  font-variation-settings: 'wght' 600;
+}
+.continue-remove:hover { opacity: 0.65; }
+
+.continue-status {
+  margin-top: auto;
+  padding-top: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: var(--text-m);
+  white-space: nowrap;
+}
+.continue-status.bitti {
+  color: var(--primary-c);
+  text-transform: uppercase;
+}
+
+@media (max-width: 767px) {
+  /* Mobilde gövde satır: çarpı+rozet | başlık | süre (en sağda) */
+  .continue-head { margin-bottom: 0; }
+
+  .continue-status {
+    margin-top: 0;
+    margin-left: auto;
+    padding-top: 0;
+    padding-left: 10px;
+  }
+}
 @media (min-width: 768px) {
   .video-grid { grid-template-columns: repeat(2, 1fr); }
 }

@@ -1,5 +1,6 @@
 import { db } from "./firebase-config.js";
 import { getSeriesVideos } from "./series-cache.js";
+import { ilerlemeOku, ilerlemeYaz, sureBicimle } from "./progress-store.js";
 import {
   doc,
   getDoc,
@@ -250,6 +251,199 @@ function buildTimestamps(timestamps) {
 }
 
 // ---------------------------------------------------------------
+// Kaldığın yerden devam et
+// ---------------------------------------------------------------
+//
+// TASARIM KARARI: kendiliğinden ASLA atlamıyoruz. Sayfa baştan açılır,
+// kayıt varsa player'ın üstünde küçük bir şerit çıkıp sorar. Böylece
+// sayfayı yenilediğinde beklemediğin bir yere fırlamıyorsun.
+//
+// Tek istisna: ana sayfadaki "Devam Et" kartından gelindiğinde URL'de
+// ?devam=1 oluyor — kullanıcı zaten devam etmek istediğini söylemiş,
+// o zaman sormadan atlıyoruz.
+
+const KAYIT_ARALIGI = 5000;   // en fazla 5 saniyede bir localStorage'a yaz
+
+let ilerlemeMeta = null;      // { title, archiveId, order }
+let sonKayitZamani = 0;
+
+function ilerlemeyiKaydet(slug, zorla = false) {
+  if (!ilerlemeMeta || !videoPlayer) return;
+  const t = videoPlayer.currentTime;
+  const d = videoPlayer.duration;
+  if (!Number.isFinite(d) || d <= 0) return;
+
+  const simdi = Date.now();
+  if (!zorla && simdi - sonKayitZamani < KAYIT_ARALIGI) return;
+  sonKayitZamani = simdi;
+
+  ilerlemeYaz(slug, t, d, ilerlemeMeta);
+}
+
+function initProgress(slug, data) {
+  ilerlemeMeta = {
+    title: data.title,
+    archiveId: data.archiveId,
+    order: data.order,
+  };
+
+  videoPlayer.addEventListener("timeupdate", () => ilerlemeyiKaydet(slug));
+  videoPlayer.addEventListener("pause", () => ilerlemeyiKaydet(slug, true));
+  // pagehide, sekme kapatma/geri gitme dahil daha güvenilir çalışıyor
+  window.addEventListener("pagehide", () => ilerlemeyiKaydet(slug, true));
+
+  const kayit = ilerlemeOku(slug);
+  if (!kayit || kayit.bitti || kayit.t < 30) return;
+
+  const devamIstendi = new URLSearchParams(window.location.search).get("devam") === "1";
+
+  if (devamIstendi) {
+    devamEt(kayit.t);
+  } else {
+    devamSeridiGoster(slug, kayit.t);
+  }
+}
+
+function devamEt(saniye) {
+  const uygula = () => { videoPlayer.currentTime = saniye; };
+  // Metadata gelmeden currentTime atanamaz
+  if (videoPlayer.readyState >= 1) uygula();
+  else videoPlayer.addEventListener("loadedmetadata", uygula, { once: true });
+}
+
+/**
+ * Player'ın tamamını kaplayan seçim katmanı.
+ *
+ * Player'ın İÇİNE (absolute) yerleştiriliyor — normal akışa girseydi
+ * altındaki her şeyi aşağı iter, yeni düzelttiğimiz CLS sorununu
+ * geri getirirdi.
+ *
+ * Tüm alanı kapladığı için kullanıcı videoya dokunup oynatamıyor;
+ * iki seçenekten birini seçmek zorunda. Klavye kısayolları da bu
+ * sırada devre dışı (initShortcuts içinde kontrol ediliyor).
+ */
+let secimKatmani = null;
+
+function devamSeridiGoster(slug, saniye) {
+  const katman = document.createElement("div");
+  katman.className = "resume-overlay";
+
+  const grup = document.createElement("div");
+  grup.className = "resume-buttons";
+
+  const devamBtn = document.createElement("button");
+  devamBtn.type = "button";
+  devamBtn.className = "resume-btn resume-continue";
+  devamBtn.innerHTML =
+    '<span class="material-symbols-outlined">play_arrow</span>' +
+    `<span>${sureBicimle(saniye)}'ten devam et</span>`;
+  devamBtn.addEventListener("click", () => {
+    devamEt(saniye);
+    katmaniKapat(katman);
+    videoPlayer.play().catch(() => {});
+  });
+
+  const bastanBtn = document.createElement("button");
+  bastanBtn.type = "button";
+  bastanBtn.className = "resume-btn resume-restart";
+  bastanBtn.innerHTML =
+    '<span class="material-symbols-outlined">restart_alt</span>' +
+    "<span>Baştan başla</span>";
+  bastanBtn.addEventListener("click", () => {
+    devamEt(0);
+    katmaniKapat(katman);
+    videoPlayer.play().catch(() => {});
+  });
+
+  grup.append(devamBtn, bastanBtn);
+  katman.appendChild(grup);
+  playerShell.appendChild(katman);
+
+  secimKatmani = katman;
+  devamBtn.focus();
+}
+
+function katmaniKapat(katman) {
+  katman.remove();
+  if (secimKatmani === katman) secimKatmani = null;
+}
+
+// ---------------------------------------------------------------
+// Klavye kısayolları
+// ---------------------------------------------------------------
+//
+// Odak bir yazı alanındayken veya yorum modalı açıkken tamamen devre dışı —
+// yorum yazarken "f" harfine basınca tam ekrana geçmesi kabul edilemez.
+
+function yaziYaziliyorMu() {
+  const el = document.activeElement;
+  if (!el) return false;
+  const tag = el.tagName;
+  return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || el.isContentEditable;
+}
+
+function initShortcuts() {
+  document.addEventListener("keydown", (e) => {
+    if (e.ctrlKey || e.altKey || e.metaKey) return;
+    if (yaziYaziliyorMu()) return;
+    if (document.body.classList.contains("comment-modal-open")) return;
+    // Devam/baştan seçimi bekliyorsa video kilitli — klavye de kilitli olmalı
+    if (secimKatmani) return;
+    if (!videoPlayer || videoPlayer.style.display === "none") return;
+
+    switch (e.key) {
+      case " ":
+      case "k":
+      case "K":
+        e.preventDefault();
+        videoPlayer.paused ? videoPlayer.play().catch(() => {}) : videoPlayer.pause();
+        break;
+
+      case "ArrowLeft":
+        e.preventDefault();
+        videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 10);
+        break;
+
+      case "ArrowRight":
+        e.preventDefault();
+        videoPlayer.currentTime = Math.min(
+          videoPlayer.duration || Infinity,
+          videoPlayer.currentTime + 10
+        );
+        break;
+
+      case "ArrowUp":
+        e.preventDefault();
+        videoPlayer.muted = false;
+        videoPlayer.volume = Math.min(1, videoPlayer.volume + 0.1);
+        break;
+
+      case "ArrowDown":
+        e.preventDefault();
+        videoPlayer.volume = Math.max(0, videoPlayer.volume - 0.1);
+        break;
+
+      case "m":
+      case "M":
+        e.preventDefault();
+        videoPlayer.muted = !videoPlayer.muted;
+        break;
+
+      case "f":
+      case "F":
+        e.preventDefault();
+        if (document.fullscreenElement) {
+          document.exitFullscreen?.();
+        } else {
+          (videoPlayer.requestFullscreen?.() ??
+            videoPlayer.webkitEnterFullscreen?.())?.catch?.(() => {});
+        }
+        break;
+    }
+  });
+}
+
+// ---------------------------------------------------------------
 // Bağlantı hızına göre preload kararı
 // ---------------------------------------------------------------
 
@@ -426,6 +620,10 @@ async function loadVideo() {
 
   // İzlenme sayacı
   initViewTracking(slug);
+
+  // Kaldığın yerden devam et + klavye kısayolları
+  initProgress(slug, data);
+  initShortcuts();
 }
 
 /** Episode rail + önceki/sonraki navigasyonunu kur. */

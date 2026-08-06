@@ -752,6 +752,93 @@ body.comment-modal-open {
 }
 
 /* ══════════════════
+    KALDIĞIN YERDEN DEVAM
+    ══════════════════ */
+/* Player'ın TAMAMINI kaplar: kullanıcı videoya dokunup oynatamaz,
+   iki seçenekten birini seçmek zorundadır.
+   Absolute — normal akışa girseydi CLS üretirdi. */
+.resume-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(5, 8, 6, 0.88);
+}
+
+/* Yan yana ve yapışık: aralarında boşluk yok, ortadaki kenarlık paylaşılıyor */
+.resume-buttons {
+  display: flex;
+  align-items: stretch;
+  max-width: 100%;
+}
+
+.resume-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 20px;
+  border: 1px solid var(--primary-c);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: opacity 0.2s, background 0.2s, color 0.2s;
+}
+
+.resume-btn .material-symbols-outlined { font-size: 19px; }
+
+.resume-continue {
+  background: var(--primary-c);
+  color: #03130d;
+}
+.resume-continue:hover { opacity: 0.9; }
+
+.resume-restart {
+  background: var(--surface-2);
+  color: var(--text-p);
+  border-left: none;
+}
+.resume-restart:hover {
+  background: var(--surface-3);
+  color: var(--primary-c);
+}
+
+.resume-btn:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 767px) {
+  .resume-overlay { padding: 12px; }
+
+  .resume-btn {
+    padding: 11px 12px;
+    font-size: 10px;
+    letter-spacing: 0.2px;
+    gap: 5px;
+  }
+  .resume-btn .material-symbols-outlined { font-size: 16px; }
+}
+
+/* Çok dar ekranda alt alta düşsün ama yine yapışık kalsın */
+@media (max-width: 359px) {
+  .resume-buttons { flex-direction: column; }
+  .resume-restart {
+    border-left: 1px solid var(--primary-c);
+    border-top: none;
+  }
+}
+
+/* ══════════════════
     VİDEO YÜKLENEMEDİ
     ══════════════════ */
 .player-error {

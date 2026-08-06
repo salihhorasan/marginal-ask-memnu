@@ -19,6 +19,13 @@
 </nav>
 
 <div class="container">
+
+  <!-- Devam Et — localStorage'dan gelir, kayıt yoksa gizli kalır -->
+  <section id="continue-section" style="display:none">
+    <h2 class="section-heading">Devam Et</h2>
+    <div class="continue-grid" id="continue-grid"></div>
+  </section>
+
   <h1 class="section-heading">Arşiv</h1>
   <div class="series-grid" id="series-grid">
     <p class="loading-state">Yükleniyor…</p>
@@ -36,6 +43,7 @@
 </footer>
 
 <script type="module" src="js/header.js"></script>
+<script type="module" src="js/continue-watching.js"></script>
 <script type="module" src="js/series-list.js"></script>
 <script type="module" src="js/cache-reset.js"></script>
 </body>
