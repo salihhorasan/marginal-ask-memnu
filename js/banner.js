@@ -12,7 +12,7 @@ function getCurrentPageType() {
 }
 
 const BANNER_CACHE_KEY = "banner_config_cache";
-const BANNER_CACHE_TTL = 1 * 60 * 60 * 1000; // 1 saat (ms)
+const BANNER_CACHE_TTL = 10 * 60 * 1000; // 10 dakika (ms)
 
 function getCachedBanner() {
   try {
