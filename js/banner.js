@@ -1,6 +1,40 @@
 import { db } from "./firebase-config.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
+// Banner mesajında sadece güvenli HTML etiketlerine izin ver.
+function sanitizeBannerHTML(raw) {
+  const div = document.createElement("div");
+  div.innerHTML = raw;
+
+  const ALLOWED_TAGS = new Set(["A", "STRONG", "B", "EM", "U", "#text", "BR"]);
+  const ALLOWED_ATTRS = { A: new Set(["href", "target"]) };
+
+  function clean(node) {
+    const children = Array.from(node.childNodes);
+    for (const child of children) {
+      if (!ALLOWED_TAGS.has(child.nodeName)) {
+        child.replaceWith(document.createTextNode(child.textContent));
+        continue;
+      }
+      if (child.nodeType === Node.ELEMENT_NODE) {
+        const allowed = ALLOWED_ATTRS[child.tagName] || new Set();
+        for (const attr of Array.from(child.attributes)) {
+          if (!allowed.has(attr.name)) child.removeAttribute(attr.name);
+        }
+        if (child.tagName === "A") {
+          const href = (child.getAttribute("href") || "").trim().toLowerCase();
+          if (href.startsWith("javascript:") || href.startsWith("data:")) {
+            child.removeAttribute("href");
+          }
+        }
+        clean(child);
+      }
+    }
+  }
+  clean(div);
+  return div.innerHTML;
+}
+
 // Hangi sayfada olduğumuzu belirleyen yardımcı fonksiyon
 function getCurrentPageType() {
   const path = window.location.pathname;
@@ -71,7 +105,7 @@ async function initBanner() {
     
     const textSpan = document.createElement("span");
     textSpan.className = "banner-text";
-    textSpan.textContent = message;
+    textSpan.innerHTML = sanitizeBannerHTML(message);
     
     banner.appendChild(textSpan);
     
