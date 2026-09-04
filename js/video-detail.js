@@ -580,9 +580,11 @@ async function loadVideo() {
   descEl.textContent = data.description || "";
 
   // Video kaynağı
-  // NOT: Archive.org'daki dosya adının identifier ile aynı ve .mp4 olduğu
-  // varsayılıyor. Bu varsayım tutmazsa aşağıdaki error dinleyicisi devreye girer.
-  const videoSrc = `https://archive.org/download/${data.archiveId}/${data.archiveId}.mp4`;
+  // archiveVideoId varsa Archive.org'un türettiği derivative (.ia.mp4) kullanılır;
+  // yoksa klasik davranış: archiveId/archiveId.mp4 (çalıştığı bilinen format).
+  const videoSrc = data.archiveVideoId?.trim()
+    ? `https://archive.org/download/${data.archiveId}/${data.archiveVideoId.trim()}.ia.mp4`
+    : `https://archive.org/download/${data.archiveId}/${data.archiveId}.mp4`;
   const source = document.createElement("source");
   source.src = videoSrc;
   source.type = "video/mp4";
