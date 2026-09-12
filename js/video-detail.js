@@ -1,6 +1,7 @@
 import { db } from "./firebase-config.js";
 import { getSeriesVideos } from "./series-cache.js";
 import { ilerlemeOku, ilerlemeYaz, sureBicimle } from "./progress-store.js";
+import { sanitizeRichText } from "./sanitize-html.js";
 import {
   doc,
   getDoc,
@@ -577,7 +578,11 @@ async function loadVideo() {
 
   // Başlık + açıklama
   titleEl.textContent = data.title;
-  descEl.textContent = data.description || "";
+  descEl.innerHTML = sanitizeRichText(data.description || "");
+  descEl.querySelectorAll('a[href^="http"]').forEach((a) => {
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+  });
 
   // Video kaynağı
   // archiveVideoId varsa Archive.org'un türettiği derivative (.ia.mp4) kullanılır;

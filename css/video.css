@@ -207,7 +207,17 @@
   font-size: 15px;
   line-height: 1.5;
   max-width: 600px;
+  white-space: pre-wrap;
 }
+
+.video-desc a {
+  color: var(--primary-c);
+  text-decoration: underline;
+  font-weight: 700;
+  transition: opacity 0.2s;
+}
+
+.video-desc a:hover { opacity: 0.8; }
 
 /* ── Video Player Shell ── */
 .player-shell {
