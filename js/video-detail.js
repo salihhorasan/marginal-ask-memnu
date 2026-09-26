@@ -16,6 +16,7 @@ const titleEl = document.getElementById("video-title");
 const descEl = document.getElementById("video-desc");
 const playerShell = document.getElementById("player-shell");
 const videoPlayer = document.getElementById("video-player");
+videoPlayer.addEventListener("focus", () => videoPlayer.blur());
 const navBar = document.getElementById("nav-bar");
 const railTrack = document.getElementById("episode-rail-track");
 const railContainer = document.getElementById("episode-rail");
